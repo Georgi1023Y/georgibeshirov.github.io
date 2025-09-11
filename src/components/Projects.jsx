@@ -4,9 +4,10 @@ import "react-lazy-load-image-component/src/effects/blur.css";
 import chat from "../assets/chat.png";
 import bar from "../assets/bar.png";
 import store from "../assets/e-commerce.png";
+import driver from "../assets/driver.png";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-const projects = [
+const projects = [ 
   {
     title: "Chat Application",
     image: chat,
@@ -41,7 +42,26 @@ const projects = [
     demo: "https://bar-center-menu.vercel.app/",
     github: "https://github.com/Georgi1023Y/bar-center-menu",
   },
+  {
+    title: "Driver Management System",
+    image: driver,
+    description:
+      "Comprehensive driver and posting declaration management system with IMI integration. Includes user authentication, driver CRUD operations, posting declarations, document management, notifications, and a fully responsive frontend.",
+    tech: [
+      "React",
+      "Node.js",
+      "Express",
+      "MongoDB",
+      "Vite",
+      "Tailwind CSS",
+      "JWT",
+      "RTPD API"
+    ],
+    demo: "https://imi-driver-project.vercel.app/", 
+    github: "https://github.com/Georgi1023Y/imi_driver_project.git", 
+  },
 ];
+
 
 const Projects = () => {
   const [currentIndex, setCurrentIndex] = useState(0);

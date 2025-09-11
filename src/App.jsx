@@ -2,7 +2,7 @@ import { ThemeProvider } from 'next-themes';
 import { useEffect } from "react";
 import Hero from "./components/Hero";
 import AboutMe from "./components/AboutMe";
-import Contact from "./components/Contact";
+// import Contact from "./components/Contact";
 import Projects from "./components/Projects";
 import Skills from "./components/Skills";
 import Experience from "./components/Experience";
@@ -47,7 +47,7 @@ function App() {
         <Skills />
         <Projects />
         <DevelopmentProcess />
-        <Contact />
+        {/* <Contact /> */}
         <Footer />
       </div>
     </ThemeProvider>
