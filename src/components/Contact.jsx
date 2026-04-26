@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Loader2, Sparkles } from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
-import { isSupabaseConfigured } from "../supabase/supabaseClient";
+import { AlertTriangle, Check, CheckCircle2, Loader2, Sparkles } from "lucide-react";
+import toast from "react-hot-toast";
+import { isSupabaseConfigured } from "../supabaseClient";
 import { submitContactForm } from "../supabase/contactService";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -91,7 +91,7 @@ function FloatingField({
   );
 }
 
-function SuccessOverlay({ warning, emailNotificationSent, onReset }) {
+function SuccessOverlay({ onReset }) {
   const confetti = useMemo(
     () =>
       Array.from({ length: 14 }, (_, i) => ({
@@ -141,17 +141,11 @@ function SuccessOverlay({ warning, emailNotificationSent, onReset }) {
       </motion.div>
 
       <h3 className="font-display text-2xl font-bold text-slate-900 dark:text-slate-50">
-        Thank you, Georgi will get back to you soon!
+        Thank you — I&apos;ll get back to you soon.
       </h3>
       <p className="mt-2 text-sm text-slate-600 dark:text-slate-300 sm:text-base">
-        Your message has been received and saved successfully.
+        Your message was saved securely. I typically reply within one business day.
       </p>
-
-      {!emailNotificationSent && (
-        <p className="mt-3 text-xs font-medium text-amber-800">
-          {warning || "Message saved; email notification may not have been delivered."}
-        </p>
-      )}
 
       <motion.button
         type="button"
@@ -171,10 +165,6 @@ const Contact = () => {
   const [fieldErrors, setFieldErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
-  const [lastMeta, setLastMeta] = useState({
-    emailNotificationSent: true,
-    warning: null,
-  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -211,32 +201,33 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isSupabaseConfigured) {
-      toast.error("Contact form backend is not configured yet.");
+      toast.error("Contact form: add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, then restart the dev server.", {
+        icon: <AlertTriangle className="h-5 w-5 shrink-0 text-rose-500" strokeWidth={2.25} />,
+      });
       return;
     }
     if (!validate()) return;
 
     setIsSubmitting(true);
-    const { data, fnError } = await submitContactForm({
+    const { data, error, fnError } = await submitContactForm({
       name: form.name.trim(),
       email: form.email.trim(),
       message: form.message.trim(),
-      timestamp: new Date().toISOString(),
     });
     setIsSubmitting(false);
 
-    if (!data?.success) {
-      toast.error(fnError || "Could not send message. Please try again.");
+    if (error || !data?.success) {
+      console.error("[Contact] Supabase error object:", error ?? fnError);
+      const msg = fnError || (error && "message" in error ? error.message : null) || "Could not send your message. Please try again.";
+      toast.error(msg, {
+        icon: <AlertTriangle className="h-5 w-5 shrink-0 text-rose-500" strokeWidth={2.25} />,
+      });
       return;
     }
 
-    if (data?.warning) {
-      toast(data.warning, { icon: "ℹ️", duration: 5000 });
-    }
-
-    setLastMeta({
-      emailNotificationSent: data?.emailNotificationSent !== false,
-      warning: data?.warning ?? null,
+    console.log("[Contact] Message saved (Supabase row):", data);
+    toast.success("Message sent successfully.", {
+      icon: <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-500" strokeWidth={2.25} />,
     });
     setSent(true);
     setFieldErrors({});
@@ -248,7 +239,6 @@ const Contact = () => {
       id="contact"
       className="w-full min-w-0 max-w-full overflow-x-hidden border-t border-slate-200/80 bg-white px-gutter py-16 text-slate-900 dark:border-slate-700/60 dark:bg-[#020617] sm:px-gutter-sm sm:py-20 lg:px-gutter-lg"
     >
-      <Toaster position="top-center" />
       <div className="mx-auto flex w-full max-w-content flex-col items-center">
         <h2 className="text-center font-display text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl">
           Start a high-trust build conversation
@@ -271,12 +261,15 @@ const Contact = () => {
           >
             beshirovgeorgi3@gmail.com
           </a>
-          .
+          . BSc Computer Science, Sofia University (FMI) — engineering-first delivery.
         </p>
 
         {!isSupabaseConfigured && (
-          <p className="mb-6 max-w-xl text-center text-sm text-amber-800">
-            Backend not configured. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, then deploy the `submit-contact` edge function.
+          <p className="mb-6 max-w-xl text-center text-sm text-amber-800 dark:text-amber-200/90">
+            Backend not configured. Set <code className="rounded bg-amber-100/80 px-1 py-0.5 text-[0.8em] dark:bg-amber-950/50">VITE_SUPABASE_URL</code> and{" "}
+            <code className="rounded bg-amber-100/80 px-1 py-0.5 text-[0.8em] dark:bg-amber-950/50">VITE_SUPABASE_ANON_KEY</code> in{" "}
+            <code className="rounded bg-amber-100/80 px-1 py-0.5 text-[0.8em] dark:bg-amber-950/50">.env</code> and restart Vite. Ensure RLS allows anon{" "}
+            <code className="rounded bg-amber-100/80 px-1 py-0.5 text-[0.8em] dark:bg-amber-950/50">INSERT</code> on <code className="rounded bg-amber-100/80 px-1 py-0.5 text-[0.8em] dark:bg-amber-950/50">messages</code>.
           </p>
         )}
 
@@ -284,11 +277,8 @@ const Contact = () => {
           <AnimatePresence mode="wait" initial={false}>
             {sent ? (
               <SuccessOverlay
-                warning={lastMeta.warning}
-                emailNotificationSent={lastMeta.emailNotificationSent}
                 onReset={() => {
                   setSent(false);
-                  setLastMeta({ emailNotificationSent: true, warning: null });
                 }}
               />
             ) : (

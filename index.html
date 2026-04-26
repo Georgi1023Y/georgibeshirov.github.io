@@ -43,6 +43,17 @@
     <title>Georgi Beshirov | AI Integrations, Full Stack Developer &amp; Web Apps</title>
   </head>
   <body>
+    <script>
+      (function () {
+        try {
+          var p = sessionStorage.getItem("ghp_spa_path");
+          if (p) {
+            sessionStorage.removeItem("ghp_spa_path");
+            history.replaceState(null, "", p);
+          }
+        } catch (e) {}
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

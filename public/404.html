@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Redirecting…</title>
+    <script>
+      (function (l) {
+        var p = l.pathname;
+        if (p === "/" || p === "/index.html") {
+          l.replace(l.origin + "/");
+          return;
+        }
+        try {
+          sessionStorage.setItem("ghp_spa_path", p + l.search + l.hash);
+        } catch (e) {}
+        l.replace(l.origin + "/index.html");
+      })(location);
+    </script>
+  </head>
+  <body>
+    <p><a href="/index.html">Loading site…</a></p>
+  </body>
+</html>

@@ -4,6 +4,8 @@ import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useTheme } from "next-themes";
 
+const R3F_EVENT_SOURCE = typeof document !== "undefined" ? document.body : undefined;
+
 function fibonacciSphere(i, n, r) {
   const phi = Math.acos(1 - (2 * (i + 0.5)) / n);
   const theta = Math.sqrt(Math.PI * n) * phi;
@@ -281,8 +283,10 @@ function AllowDocumentScroll() {
   const { gl } = useThree();
   useLayoutEffect(() => {
     const el = gl.domElement;
+    el.style.pointerEvents = "none";
     el.style.touchAction = "pan-y";
     return () => {
+      el.style.pointerEvents = "";
       el.style.touchAction = "";
     };
   }, [gl]);
@@ -297,9 +301,10 @@ function DigitalHelixBackground({ pointerRef, lowPower }) {
   const useBloom = !lowPower;
 
   return (
-    <div className="pointer-events-none h-full w-full" aria-hidden>
+    <div className="pointer-events-none h-full w-full touch-pan-y" aria-hidden>
       <Canvas
-        className="!h-full !w-full"
+        className="!h-full !w-full touch-pan-y"
+        eventSource={R3F_EVENT_SOURCE}
         dpr={lowPower ? [1, 1] : [1, 1.25]}
         gl={{
           antialias: !lowPower,
@@ -308,10 +313,13 @@ function DigitalHelixBackground({ pointerRef, lowPower }) {
           stencil: false,
         }}
         camera={{ position: [0, 0.1, 5.1], fov: 40, near: 0.1, far: 32 }}
+        resize={{ scroll: false, debounce: { scroll: 0, resize: 0 } }}
         style={{
           display: "block",
+          minHeight: 0,
           background: "transparent",
           pointerEvents: "none",
+          touchAction: "pan-y",
           userSelect: "none",
         }}
         frameloop="always"

@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 const navLinks = [
-  { name: "Home", id: "home", Icon: Home },
+  { name: "Home", id: "top", Icon: Home },
   { name: "About", id: "about", Icon: User },
   { name: "Experience", id: "experience", Icon: Briefcase },
   { name: "Projects", id: "projects", Icon: Layout },

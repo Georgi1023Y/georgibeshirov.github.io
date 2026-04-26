@@ -3,6 +3,13 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
 
+/** Bind R3F’s event system to the document so the Canvas wrapper can stay pointer-events: none and never steal scroll. */
+const R3F_EVENT_SOURCE = typeof document !== "undefined" ? document.body : undefined;
+
+/** Fixed topology: never change count or buffer lengths after mount (avoids R3F buffer size mismatch). */
+const PARTICLE_COUNT = 480;
+const EDGE_MAX_DIST = 0.38;
+
 function fibonacciSphere(i, n, r) {
   const phi = Math.acos(1 - (2 * (i + 0.5)) / n);
   const theta = Math.sqrt(Math.PI * n) * phi;
@@ -41,22 +48,21 @@ function buildNetworkEdgePairs(positions, count, maxDistance) {
 
 /**
  * Stops R3F from using touchAction:none on the canvas (which can fight scroll on some browsers).
- * Canvas wrapper already has pointer-events: none; no ScrollControls.
  */
 function CanvasScrollSafe() {
   const { gl } = useThree();
   useLayoutEffect(() => {
     const el = gl.domElement;
     el.style.pointerEvents = "none";
-    el.style.touchAction = "auto";
+    el.style.touchAction = "pan-y";
     return () => {
+      el.style.pointerEvents = "";
       el.style.touchAction = "";
     };
   }, [gl]);
   return null;
 }
 
-/** Light: neutral slate. Dark: indigo particles + emerald edge lines to match workflow UI. */
 const COLORS = {
   light: { particle: "#475569", line: "#94a3b8", lineOpacity: 0.4, particleOpacity: 0.88 },
   dark: {
@@ -71,32 +77,32 @@ function NeuralScene({ pointerRef, lowPower, isDark }) {
   const root = useRef(null);
   const lineRef = useRef(null);
   const pointsRef = useRef(null);
-  const pointMatRef = useRef(null);
-  const lineMatRef = useRef(null);
   const smooth = useRef({ x: 0, y: 0 });
   const t = useRef(0);
+  const frameHalted = useRef(false);
+  const loggedFrameError = useRef(false);
 
-  const { pointCount, edgeMaxDist, particleSize } = lowPower
-    ? { pointCount: 360, edgeMaxDist: 0.42, particleSize: 0.022 }
-    : { pointCount: 520, edgeMaxDist: 0.38, particleSize: 0.018 };
+  const pointCount = PARTICLE_COUNT;
+  const particleSize = lowPower ? 0.022 : 0.018;
 
   const { basePositions, edgePairs, lineVertexCount } = useMemo(() => {
+    const count = PARTICLE_COUNT;
     const r = 1.35;
-    const positions = new Float32Array(pointCount * 3);
-    for (let i = 0; i < pointCount; i++) {
-      const [x, y, z] = fibonacciSphere(i, pointCount, r);
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const [x, y, z] = fibonacciSphere(i, count, r);
       const j = i * 3;
       positions[j] = x;
       positions[j + 1] = y;
       positions[j + 2] = z;
     }
-    const pairs = buildNetworkEdgePairs(positions, pointCount, edgeMaxDist);
+    const pairs = buildNetworkEdgePairs(positions, count, EDGE_MAX_DIST);
     return {
       basePositions: positions,
       edgePairs: pairs,
       lineVertexCount: pairs.length,
     };
-  }, [pointCount, edgeMaxDist]);
+  }, []);
 
   const pointsAnimated = useMemo(
     () => new Float32Array(basePositions),
@@ -124,81 +130,88 @@ function NeuralScene({ pointerRef, lowPower, isDark }) {
   const palette = isDark ? COLORS.dark : COLORS.light;
 
   useFrame((_, delta) => {
-    t.current += delta;
-    const p = pointerRef.current;
-    smooth.current.x = THREE.MathUtils.lerp(smooth.current.x, p.x, 0.06);
-    smooth.current.y = THREE.MathUtils.lerp(smooth.current.y, p.y, 0.06);
-
-    if (root.current) {
-      root.current.rotation.y = THREE.MathUtils.lerp(
-        root.current.rotation.y,
-        smooth.current.x * 0.28,
-        0.04
-      );
-      root.current.rotation.x = THREE.MathUtils.lerp(
-        root.current.rotation.x,
-        -smooth.current.y * 0.2,
-        0.04
-      );
+    if (frameHalted.current) {
+      return;
     }
+    try {
+      t.current += delta;
+      const p = pointerRef.current;
+      smooth.current.x = THREE.MathUtils.lerp(smooth.current.x, p.x, 0.06);
+      smooth.current.y = THREE.MathUtils.lerp(smooth.current.y, p.y, 0.06);
 
-    const pal = isDark ? COLORS.dark : COLORS.light;
-    if (pointMatRef.current) {
-      pointMatRef.current.color.set(pal.particle);
-      pointMatRef.current.opacity = pal.particleOpacity;
-    }
-    if (lineMatRef.current) {
-      lineMatRef.current.color.set(pal.line);
-      lineMatRef.current.opacity = pal.lineOpacity;
-    }
+      if (root.current) {
+        root.current.rotation.y = THREE.MathUtils.lerp(
+          root.current.rotation.y,
+          smooth.current.x * 0.28,
+          0.04
+        );
+        root.current.rotation.x = THREE.MathUtils.lerp(
+          root.current.rotation.x,
+          -smooth.current.y * 0.2,
+          0.04
+        );
+      }
 
-    const breathe = 1 + Math.sin(t.current * 0.45) * 0.02;
-    for (let i = 0; i < pointCount; i++) {
-      const o = i * 3;
-      const bx = basePositions[o] * breathe;
-      const by = basePositions[o + 1] * breathe;
-      const bz = basePositions[o + 2] * breathe;
-      const infl = smooth.current.x * 0.12 + smooth.current.y * 0.08;
-      pointsAnimated[o] = bx + infl * 0.04;
-      pointsAnimated[o + 1] = by - infl * 0.03;
-      pointsAnimated[o + 2] = bz;
-    }
+      const breathe = 1 + Math.sin(t.current * 0.45) * 0.02;
+      for (let i = 0; i < pointCount; i++) {
+        const o = i * 3;
+        const bx = basePositions[o] * breathe;
+        const by = basePositions[o + 1] * breathe;
+        const bz = basePositions[o + 2] * breathe;
+        const infl = smooth.current.x * 0.12 + smooth.current.y * 0.08;
+        pointsAnimated[o] = bx + infl * 0.04;
+        pointsAnimated[o + 1] = by - infl * 0.03;
+        pointsAnimated[o + 2] = bz;
+      }
 
-    const pAttr = pointsRef.current?.geometry?.getAttribute("position");
-    if (pAttr) pAttr.needsUpdate = true;
+      const pAttr = pointsRef.current?.geometry?.getAttribute("position");
+      if (pAttr) {
+        pAttr.needsUpdate = true;
+      }
 
-    if (lineRef.current && lineVertexCount > 0) {
-      const posAttr = lineRef.current.geometry.getAttribute("position");
-      if (posAttr) {
-        const out = posAttr.array;
-        for (let e = 0, o = 0; e < edgePairs.length; e += 2) {
-          const ia = edgePairs[e];
-          const ib = edgePairs[e + 1];
-          out[o++] = pointsAnimated[ia * 3];
-          out[o++] = pointsAnimated[ia * 3 + 1];
-          out[o++] = pointsAnimated[ia * 3 + 2];
-          out[o++] = pointsAnimated[ib * 3];
-          out[o++] = pointsAnimated[ib * 3 + 1];
-          out[o++] = pointsAnimated[ib * 3 + 2];
+      if (lineRef.current && lineVertexCount > 0) {
+        const posAttr = lineRef.current.geometry.getAttribute("position");
+        if (posAttr && posAttr.array?.length === linePositions.length) {
+          const out = posAttr.array;
+          for (let e = 0, o = 0; e < edgePairs.length; e += 2) {
+            const ia = edgePairs[e];
+            const ib = edgePairs[e + 1];
+            out[o++] = pointsAnimated[ia * 3];
+            out[o++] = pointsAnimated[ia * 3 + 1];
+            out[o++] = pointsAnimated[ia * 3 + 2];
+            out[o++] = pointsAnimated[ib * 3];
+            out[o++] = pointsAnimated[ib * 3 + 1];
+            out[o++] = pointsAnimated[ib * 3 + 2];
+          }
+          posAttr.needsUpdate = true;
         }
-        posAttr.needsUpdate = true;
+      }
+    } catch (err) {
+      frameHalted.current = true;
+      if (!loggedFrameError.current) {
+        loggedFrameError.current = true;
+        console.error("[NeuralParticleMesh] useFrame halted after error (prevents rAF flood):", err);
       }
     }
   });
 
+  const pointsKey = `neural-points-${pointCount}`;
+  const lineVertexCountForAttr = linePositions.length / 3;
+  const linesKey = `neural-lines-${lineVertexCount}`;
+
   return (
     <group ref={root} position={[0, 0.08, 0]}>
-      <points ref={pointsRef} rotation={[0.1, 0, 0]}>
+      <points key={pointsKey} ref={pointsRef} rotation={[0.1, 0, 0]}>
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
             count={pointCount}
             array={pointsAnimated}
             itemSize={3}
+            usage={THREE.DynamicDrawUsage}
           />
         </bufferGeometry>
         <pointsMaterial
-          ref={pointMatRef}
           size={particleSize}
           color={palette.particle}
           sizeAttenuation
@@ -208,17 +221,17 @@ function NeuralScene({ pointerRef, lowPower, isDark }) {
         />
       </points>
       {lineVertexCount > 0 && (
-        <lineSegments ref={lineRef} rotation={[0.1, 0, 0]}>
+        <lineSegments key={linesKey} ref={lineRef} rotation={[0.1, 0, 0]}>
           <bufferGeometry>
             <bufferAttribute
               attach="attributes-position"
-              count={lineVertexCount}
+              count={lineVertexCountForAttr}
               array={linePositions}
               itemSize={3}
+              usage={THREE.DynamicDrawUsage}
             />
           </bufferGeometry>
           <lineBasicMaterial
-            ref={lineMatRef}
             color={palette.line}
             transparent
             opacity={palette.lineOpacity}
@@ -230,17 +243,15 @@ function NeuralScene({ pointerRef, lowPower, isDark }) {
   );
 }
 
-/**
- * Fills a full-viewport parent (e.g. Hero’s fixed z-[-1] wrapper). pointer-events: none; no scroll hooks.
- */
 export default function NeuralParticleMesh({ pointerRef, lowPower, isDark }) {
   return (
     <div
-      className="pointer-events-none absolute inset-0 h-full w-full min-h-0 overflow-hidden"
+      className="pointer-events-none absolute inset-0 h-full w-full min-h-0 touch-pan-y overflow-hidden"
       aria-hidden
     >
       <Canvas
-        className="!h-full !w-full"
+        className="!h-full !w-full touch-pan-y"
+        eventSource={R3F_EVENT_SOURCE}
         dpr={lowPower ? [1, 1] : [1, 1.25]}
         gl={{
           antialias: !lowPower,
@@ -248,19 +259,22 @@ export default function NeuralParticleMesh({ pointerRef, lowPower, isDark }) {
           powerPreference: lowPower ? "low-power" : "default",
           stencil: false,
         }}
+        resize={{ scroll: false, debounce: { scroll: 0, resize: 0 } }}
         style={{
           display: "block",
           width: "100%",
           height: "100%",
+          minHeight: 0,
           background: "transparent",
           pointerEvents: "none",
+          touchAction: "pan-y",
           userSelect: "none",
         }}
         frameloop="always"
         onCreated={({ gl, scene }) => {
           const el = gl.domElement;
           el.style.pointerEvents = "none";
-          el.style.touchAction = "auto";
+          el.style.touchAction = "pan-y";
           if (scene) scene.background = null;
         }}
       >

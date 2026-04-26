@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
+import React, { lazy, memo, Suspense, useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 import { FaGithub, FaInstagram } from "react-icons/fa";
@@ -9,6 +9,33 @@ import { Hero3DFallback } from "./hero/Hero3DFallback";
 const NeuralParticleMesh = lazy(() => import("./hero/NeuralParticleMesh"));
 
 const ease = [0.22, 1, 0.36, 1];
+
+/** Isolated from hero copy + motion so Framer / React updates do not re-render the WebGL subtree. */
+const HeroParticleLayer = memo(function HeroParticleLayer({
+  reducedMotion,
+  enable3D,
+  mounted,
+  isDark,
+  lowPower,
+  pointerRef,
+}) {
+  return (
+    <div
+      className="pointer-events-none fixed left-0 top-0 z-[-1] h-[100svh] w-screen touch-pan-y overflow-hidden"
+      aria-hidden
+    >
+      {reducedMotion || !enable3D ? (
+        <Hero3DFallback isDark={isDark} />
+      ) : (
+        <Suspense fallback={<Hero3DFallback isDark={isDark} />}>
+          {mounted && (
+            <NeuralParticleMesh pointerRef={pointerRef} lowPower={lowPower} isDark={isDark} />
+          )}
+        </Suspense>
+      )}
+    </div>
+  );
+});
 
 const Hero = () => {
   const { resolvedTheme } = useTheme();
@@ -72,28 +99,18 @@ const Hero = () => {
 
   return (
     <>
-      <div
-        className="pointer-events-none fixed left-0 top-0 z-[-1] h-[100svh] w-screen overflow-hidden"
-        aria-hidden
-      >
-        {reducedMotion || !enable3D ? (
-          <Hero3DFallback isDark={isDark} />
-        ) : (
-          <Suspense fallback={<Hero3DFallback isDark={isDark} />}>
-            {mounted && (
-              <NeuralParticleMesh
-                pointerRef={pointerRef}
-                lowPower={lowPower}
-                isDark={isDark}
-              />
-            )}
-          </Suspense>
-        )}
-      </div>
+      <HeroParticleLayer
+        reducedMotion={reducedMotion}
+        enable3D={enable3D}
+        mounted={mounted}
+        isDark={isDark}
+        lowPower={lowPower}
+        pointerRef={pointerRef}
+      />
 
       <section
         className="relative z-10 flex min-h-[100svh] min-w-0 max-w-full flex-col items-center justify-center overflow-x-hidden bg-transparent px-gutter pb-12 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] text-center text-slate-900 dark:text-slate-50 sm:px-gutter-sm lg:px-gutter-lg"
-        id="home"
+        id="top"
       >
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-28 bg-gradient-to-b from-transparent to-white dark:to-[#020617] sm:h-36"
