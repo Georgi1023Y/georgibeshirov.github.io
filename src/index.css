@@ -2,3 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    @apply min-h-dvh font-sans antialiased;
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(5rem + env(safe-area-inset-top, 0px));
+    overflow-x: hidden;
+  }
+
+  html,
+  body,
+  #root {
+    @apply min-h-dvh bg-white text-slate-900 dark:bg-[#020617] dark:text-slate-50;
+  }
+
+  body,
+  #root {
+    min-width: 0;
+    max-width: 100%;
+    min-height: 0;
+    overflow-x: hidden;
+  }
+
+  section[id] {
+    scroll-margin-top: calc(5rem + env(safe-area-inset-top, 0px));
+  }
+}
+
+/* Subtle film grain; sits above bg, below main content (z-10) */
+@layer components {
+  .bg-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    opacity: 0.08;
+    mix-blend-mode: overlay;
+  }
+
+  html.dark .bg-grain {
+    opacity: 0.1;
+  }
+
+  html.light .bg-grain {
+    opacity: 0.03;
+    mix-blend-mode: multiply;
+  }
+}
+
+@layer utilities {
+  @keyframes soft-cta-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.32);
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+    }
+  }
+  .animate-soft-cta-pulse {
+    animation: soft-cta-pulse 2.4s ease-in-out infinite;
+  }
+}

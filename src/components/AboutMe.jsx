@@ -1,61 +1,86 @@
-import React from "react";
-import me from "../assets/georgi.jpg";
+import React, { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import me from "../assets/georgi.webp";
+import {
+  SiCss3,
+  SiExpress,
+  SiHtml5,
+  SiJavascript,
+  SiMongodb,
+  SiNodedotjs,
+  SiReact,
+  SiTailwindcss,
+} from "react-icons/si";
 
 const technologies = [
-  "React",
-  "Node.js",
-  "Tailwind CSS",
-  "Express.js",
-  "MongoDB",
-  "JavaScript",
-  "HTML",
-  "CSS",
+  { name: "React", icon: SiReact, color: "text-sky-400" },
+  { name: "Node.js", icon: SiNodedotjs, color: "text-emerald-400" },
+  { name: "Tailwind CSS", icon: SiTailwindcss, color: "text-cyan-400" },
+  { name: "Express.js", icon: SiExpress, color: "text-slate-200" },
+  { name: "MongoDB", icon: SiMongodb, color: "text-green-500" },
+  { name: "JavaScript", icon: SiJavascript, color: "text-amber-400" },
+  { name: "HTML", icon: SiHtml5, color: "text-orange-400" },
+  { name: "CSS", icon: SiCss3, color: "text-blue-400" },
 ];
 
 const AboutMe = () => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-10% 0px" });
+
   return (
     <section
       id="about"
-      className="w-full bg-gradient-to-br from-[#232526] to-[#414345] dark:from-[#ffffff] dark:to-[#f8f9fa] text-gray-100 dark:text-gray-900 py-10 px-4 flex flex-col items-center"
+      className="w-full min-w-0 max-w-full overflow-x-hidden border-t border-slate-200/80 bg-white py-16 px-gutter dark:border-slate-700/60 dark:bg-[#020617] sm:py-20 sm:px-gutter-sm lg:px-gutter-lg"
     >
-      <div className="flex flex-col md:flex-row gap-8 md:gap-16 max-w-4xl w-full items-center">
-        <div className="flex-shrink-0 flex justify-center md:justify-start">
-          <img
-            src={me}
-            alt="Profile picture"
-            className="w-44 h-44 sm:w-44 sm:h-44 md:w-52 md:h-52 rounded-full border-4 border-cyan-400 dark:border-pink-400 shadow-lg object-cover bg-[#232526] dark:bg-white"
-          />
-        </div>
-        <div className="flex-1">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-cyan-400 dark:text-pink-400">
-            About Me
+      <div
+        ref={ref}
+        className="mx-auto flex min-w-0 w-full max-w-4xl flex-col items-center gap-10 md:flex-row md:items-start md:gap-16"
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="flex shrink-0 justify-center md:justify-start"
+        >
+          <div className="relative">
+            <div className="absolute -inset-1 rounded-ds-full bg-gradient-to-tr from-indigo-500/30 to-slate-200/40 opacity-60 blur-md dark:from-indigo-500/20 dark:to-slate-700/30" />
+            <img
+              src={me}
+              alt="Georgi Beshirov"
+              loading="lazy"
+              decoding="async"
+              className="relative h-40 w-40 rounded-ds-full border border-slate-200 object-cover shadow-lg dark:border-slate-600 sm:h-48 sm:w-48 md:h-52 md:w-52"
+            />
+          </div>
+        </motion.div>
+
+        <div className="min-w-0 flex-1 text-center md:text-left">
+          <h2 className="font-display text-2xl font-bold text-slate-900 dark:text-slate-50 sm:text-3xl">
+            Solution partner, not a ticket queue
           </h2>
-          <p className="text-base sm:text-lg text-gray-200 dark:text-gray-700 mb-4">
-            Hello! I am Georgi Beshirov, Full-Stack Developer with experience in
-            creating modern web applications. I like to combine creativity with
-            technology to provide innovative solutions and excellent user
-            experience.
+          <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg">
+            I work as a <span className="font-semibold text-slate-900 dark:text-slate-50">high-end solution partner</span>{" "}
+            for teams that need production-grade web apps,{" "}
+            <span className="font-semibold text-slate-900 dark:text-slate-50">AI integrations</span>, and architecture
+            that still reads cleanly six months later — with measurable ROI at the center.
           </p>
-          <div className="mb-4">
-            <span className="font-semibold text-pink-400 dark:text-cyan-400">
-              Technologies I use:
+          <div className="mt-8">
+            <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+              Core stack
             </span>
-            <ul className="flex flex-wrap gap-2 mt-2">
+            <ul className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
               {technologies.map((tech) => (
                 <li
-                  key={tech}
-                  className="bg-gradient-to-r from-cyan-400 to-pink-400 text-white dark:text-gray-900 rounded-lg px-3 py-1 text-xs font-medium shadow"
+                  key={tech.name}
+                  className="rounded-ds-lg border border-slate-200/90 bg-slate-50/50 px-2.5 py-2.5 text-left text-xs font-medium text-slate-800 backdrop-blur-sm transition hover:border-indigo-200 dark:border-slate-600/50 dark:bg-slate-900/50 dark:text-slate-200 dark:hover:border-indigo-500/40"
                 >
-                  {tech}
+                  <div className="flex items-center gap-2">
+                    <tech.icon className={`h-4 w-4 ${tech.color} dark:opacity-90`} />
+                    <span>{tech.name}</span>
+                  </div>
                 </li>
               ))}
             </ul>
-          </div>
-          <div>
-            <span className="font-semibold text-cyan-400 dark:text-pink-400">Curious fact:</span>
-            <span className="ml-2 text-gray-100 dark:text-gray-700">
-              In my free time I like to travel.
-            </span>
           </div>
         </div>
       </div>

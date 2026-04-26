@@ -1,209 +1,235 @@
-import React, { useState, useEffect } from "react";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/blur.css";
-import chat from "../assets/chat.png";
-import bar from "../assets/bar.png";
-import store from "../assets/e-commerce.png";
-import driver from "../assets/driver.png";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import React, { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import {
+  ArrowUpRight,
+  Bot,
+  Check,
+  Database,
+  Globe,
+  KeyRound,
+  Layers,
+  Link2,
+  MessageSquare,
+  Palette,
+  Server,
+  Shield,
+  Sparkles,
+  Webhook,
+  Zap,
+} from "lucide-react";
 
-const projects = [ 
+const iconMap = {
+  React: Layers,
+  "Node.js": Server,
+  MongoDB: Database,
+  Express: Globe,
+  JWT: KeyRound,
+  "Socket.io": Zap,
+  Tailwind: Palette,
+  Webhook: Webhook,
+  API: Link2,
+  IMI: Shield,
+  "Claude 3.5 (Anthropic)": Sparkles,
+  Playwright: Globe,
+  Puppeteer: Bot,
+  "Financial APIs": Link2,
+};
+
+function TechIcon({ name }) {
+  const Cmp = iconMap[name] || Layers;
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 rounded-ds-full border border-slate-200/90 bg-slate-50/50 px-2.5 py-1 text-[11px] font-medium text-slate-700 backdrop-blur-sm dark:border-slate-600/50 dark:bg-slate-900/50 dark:text-slate-200"
+      title={name}
+    >
+      <Cmp className="h-3.5 w-3.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
+      {name}
+    </span>
+  );
+}
+
+const projects = [
   {
-    title: "Chat Application",
-    image: chat,
-    description:
-      "Real-time chat platform with support for group and private messaging, avatars and notifications.",
-    tech: ["React", "Node.js", "Socket.io", "MongoDB", "Tailwind CSS"],
-    demo: "https://chat-app-9p6u.onrender.com/login",
-    github: "https://github.com/Georgi1023Y/chat-app.git",
-  },
-  {
-    title: "E-commerce Store",
-    image: store,
-    description:
-      "Modern e-commerce site with shopping cart, payments and admin panel for product management.",
-    tech: [
-      "React",
-      "Redux",
-      "Node.js",
-      "Express",
-      "MongoDB",
-      "Stripe",
-      "Tailwind CSS",
+    title: "Advanced financial analysis bot",
+    problem:
+      "Investment and research teams needed a faster way to synthesize market signals and qualitative context without manually trawling dozens of sources ad hoc.",
+    solution:
+      "Architected a sophisticated AI agent for real-time financial data extraction and sentiment analysis. Leveraged Anthropic’s Claude for complex reasoning over scraped market data to provide actionable investment insights, with a Node.js control plane and web-scraping pipelines (Playwright / Puppeteer) and integrations to financial APIs.",
+    outcomes: [
+      "Automated deep-market research, reducing manual data gathering time by 95%.",
+      "Optimized research throughput with auditable, repeatable extraction flows.",
+      "Enabled sentiment and structure-aware analysis on noisy, high-volume data.",
     ],
-    demo: "",
-    github: "",
-  },
-  {
-    title: "Website For Bar",
-    image: bar,
-    description: "Website for bar featuring menu and photo gallery.",
-    tech: ["React", "Tailwind CSS", "EmailJS"],
-    demo: "https://bar-center-menu.vercel.app/",
-    github: "https://github.com/Georgi1023Y/bar-center-menu",
-  },
-  {
-    title: "Driver Management System",
-    image: driver,
-    description:
-      "Comprehensive driver and posting declaration management system with IMI integration. Includes user authentication, driver CRUD operations, posting declarations, document management, notifications, and a fully responsive frontend.",
     tech: [
-      "React",
+      "Claude 3.5 (Anthropic)",
       "Node.js",
-      "Express",
-      "MongoDB",
-      "Vite",
-      "Tailwind CSS",
-      "JWT",
-      "RTPD API"
+      "Playwright",
+      "Puppeteer",
+      "Financial APIs",
     ],
-    demo: "https://imi-driver-project.vercel.app/", 
-    github: "https://github.com/Georgi1023Y/imi_driver_project.git", 
+    links: null,
+  },
+  {
+    title: "IMI system (driver & compliance platform)",
+    problem:
+      "Regulated logistics workflows were fragmented across spreadsheets, slowing compliance and operational visibility.",
+    solution:
+      "A full-stack React, Node.js, and MongoDB platform with secure auth, IMI-related integrations, and role-aware dashboards.",
+    outcomes: [
+      "Optimized performance for data-heavy, production reporting flows.",
+      "Automated manual tasks in posting and status tracking (critical posting lanes).",
+      "Ensured auditable, secure handling of compliance-sensitive operations.",
+    ],
+    tech: ["React", "Node.js", "Express", "MongoDB", "JWT", "IMI"],
+    links: {
+      demo: "https://imi-driver-project.vercel.app/",
+      label: "Live context",
+    },
+  },
+  {
+    title: "Escrow & payments API layer",
+    problem:
+      "A transaction-heavy workflow needed reliable escrow hand-offs without manual reconciliation or fragile one-off scripts.",
+    solution:
+      "A resilient API integration layer with validation, idempotent flows, and clear state for payments-related operations.",
+    outcomes: [
+      "Ensured secure transactions with clear hand-offs and less manual reconciliation.",
+      "Automated manual tasks in payout and status updates.",
+      "Optimized performance and reliability for repeated payment operations.",
+    ],
+    tech: ["Node.js", "API", "Webhook", "React"],
+    links: null,
+  },
+  {
+    title: "Real-time chat & coordination",
+    problem:
+      "Teams required instant coordination instead of email lag and context loss between devices.",
+    solution:
+      "A Socket.io–powered real-time stack on React and Node with authenticated sessions, channels, and live notifications.",
+    outcomes: [
+      "Optimized performance for real-time message delivery and presence.",
+      "Automated manual follow-ups by centralizing live team coordination.",
+      "Secure sessions and access boundaries for distributed teams.",
+    ],
+    tech: ["React", "Node.js", "Socket.io", "MongoDB", "Tailwind"],
+    links: {
+      demo: "https://chat-app-9p6u.onrender.com/login",
+      label: "App",
+    },
   },
 ];
 
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.08, duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
 
 const Projects = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isSliding, setIsSliding] = useState(false);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (!isSliding) {
-        setIsSliding(true);
-        setCurrentIndex((prev) => (prev + 1) % projects.length);
-      }
-    }, 5000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const nextSlide = () => {
-    if (!isSliding) {
-      setIsSliding(true);
-      setCurrentIndex((prev) => (prev + 1) % projects.length);
-    }
-  };
-
-  const prevSlide = () => {
-    if (!isSliding) {
-      setIsSliding(true);
-      setCurrentIndex((prev) => (prev - 1 + projects.length) % projects.length);
-    }
-  };
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsSliding(false), 500);
-    return () => clearTimeout(timer);
-  }, [currentIndex]);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-10% 0px" });
 
   return (
     <section
       id="projects"
-      className="w-full py-12 px-4 flex flex-col items-center bg-gradient-to-br from-[#232526] to-[#414345] dark:from-[#ffffff] dark:to-[#f8f9fa]"
+      className="w-full min-w-0 max-w-full overflow-x-hidden border-t border-slate-200/80 bg-slate-50/50 py-16 px-gutter dark:border-slate-700/60 dark:bg-slate-950/40 sm:py-20 sm:px-gutter-sm lg:px-gutter-lg"
     >
-      <h2 className="text-3xl font-bold mb-10 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-400 dark:from-pink-400 dark:to-cyan-400">
-        Projects
-      </h2>
-      
-      <div className="relative w-full max-w-3xl">
-        <div className="relative overflow-hidden">
-          <div
-            className="flex transition-transform duration-500"
-            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-          >
-            {projects.map((project, index) => (
-              <div
-                key={project.title}
-                className="min-w-full bg-[#2d2f38] dark:bg-white/80 rounded-2xl shadow-lg border border-[#383a47] dark:border-gray-200 flex flex-col overflow-hidden hover:scale-[1.025] hover:shadow-2xl transition-transform duration-200"
-              >
-                <div className="relative h-48 w-1/2">
-                  <LazyLoadImage
-                    src={project.image}
-                    alt={project.title}
-                    height={192}
-                    width={384}
-                    effect="blur"
-                    className="object-cover"
-                    placeholder={<div className="w-full h-full bg-gray-200 dark:bg-gray-800 animate-pulse" />}
-                  />
-                </div>
-                <div className="flex flex-col flex-1 p-6">
-                  <h3 className="text-xl font-semibold mb-2 text-cyan-200 dark:text-gray-800">
+      <div className="mx-auto max-w-content">
+        <h2 className="mb-3 text-center font-display text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl">
+          Impact &amp; case studies
+        </h2>
+        <p className="mx-auto mb-12 max-w-2xl text-center text-slate-600 dark:text-slate-400 sm:mb-14 sm:text-base">
+          Clear problem–solution narrative with measurable impact: performance, automation, and
+          secure, reliable operations.
+        </p>
+
+        <ul ref={ref} className="flex flex-col gap-10 sm:gap-12">
+          {projects.map((project, index) => (
+            <motion.li
+              key={project.title}
+              custom={index}
+              initial="hidden"
+              animate={inView ? "visible" : "hidden"}
+              variants={itemVariants}
+              className="overflow-hidden rounded-ds-2xl border border-slate-200/90 bg-slate-50/50 p-6 shadow-sm backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/50 sm:p-8"
+            >
+              <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex items-start gap-2">
+                  {project.title.includes("financial") ? (
+                    <Bot className="mt-0.5 h-5 w-5 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                  ) : (
+                    <MessageSquare className="mt-0.5 h-5 w-5 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                  )}
+                  <h3 className="text-left font-display text-xl font-bold capitalize text-slate-900 dark:text-slate-50 sm:text-2xl">
                     {project.title}
                   </h3>
-                  <p className="text-gray-200 dark:text-gray-700 mb-3 text-sm flex-1">
-                    {project.description}
+                </div>
+                {project.links?.demo && (
+                  <a
+                    href={project.links.demo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 transition hover:text-indigo-500 dark:text-indigo-400"
+                  >
+                    {project.links.label}
+                    <ArrowUpRight className="h-4 w-4" />
+                  </a>
+                )}
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-rose-600/90 dark:text-rose-400/90">
+                    Problem
                   </p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.tech.map((t) => (
-                      <span
-                        key={t}
-                        className="bg-gradient-to-r from-cyan-400 to-pink-400 text-xs text-white dark:text-gray-900 px-3 py-1 rounded-full font-medium shadow-sm"
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex gap-3 mt-auto">
-                    <a
-                      href={project.demo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 text-center bg-cyan-500 hover:bg-cyan-600 dark:bg-pink-500 dark:hover:bg-pink-600 text-white font-bold py-2 px-3 text-sm sm:text-base rounded-full transition-colors duration-150"
-                    >
-                      See Demo
-                    </a>
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 text-center bg-gray-700 hover:bg-gray-800 dark:bg-gray-200 dark:hover:bg-gray-300 text-white dark:text-gray-900 font-bold py-2 px-3 text-sm sm:text-base rounded-full transition-colors duration-150"
-                    >
-                      GitHub
-                    </a>
-                  </div>
+                  <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">
+                    {project.problem}
+                  </p>
+                </div>
+                <div>
+                  <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-indigo-600/90 dark:text-indigo-400/90">
+                    Solution
+                  </p>
+                  <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">
+                    {project.solution}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Navigation Arrows */}
-        <button
-          onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 dark:bg-white/50 text-white dark:text-gray-900 rounded-full p-2 hover:bg-black/70 dark:hover:bg-white/70 transition-colors"
-          aria-label="Previous project"
-        >
-          <FaChevronLeft className="w-6 h-6" />
-        </button>
-        <button
-          onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 dark:bg-white/50 text-white dark:text-gray-900 rounded-full p-2 hover:bg-black/70 dark:hover:bg-white/70 transition-colors"
-          aria-label="Next project"
-        >
-          <FaChevronRight className="w-6 h-6" />
-        </button>
+              <div className="mt-6">
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-500">
+                  Outcomes
+                </p>
+                <ul className="space-y-2">
+                  {project.outcomes.map((o) => (
+                    <li
+                      key={o}
+                      className="flex gap-2.5 text-sm font-medium text-slate-800 dark:text-slate-200 sm:text-base"
+                    >
+                      <Check
+                        className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400"
+                        strokeWidth={2.5}
+                        aria-hidden
+                      />
+                      <span className="leading-relaxed text-slate-700 dark:text-slate-300">
+                        {o}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-        {/* Dots */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-          {projects.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                if (!isSliding) {
-                  setIsSliding(true);
-                  setCurrentIndex(index);
-                }
-              }}
-              className={`w-3 h-3 rounded-full transition-colors ${
-                currentIndex === index
-                  ? "bg-cyan-400 dark:bg-pink-400"
-                  : "bg-gray-400 dark:bg-gray-600"
-              }`}
-            />
+              <div className="mt-5 flex min-w-0 flex-wrap gap-2 border-t border-slate-200/80 pt-4 dark:border-slate-700/60">
+                {project.tech.map((t) => (
+                  <TechIcon key={t} name={t} />
+                ))}
+              </div>
+            </motion.li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

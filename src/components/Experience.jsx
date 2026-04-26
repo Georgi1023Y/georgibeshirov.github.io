@@ -2,65 +2,82 @@ import React from "react";
 
 const experiences = [
   {
-    title: "Junior Full Stack Developer",
-    date: "2022 - 2024",
-    description:
-      "Develop web applications with React, Node.js and MongoDB. Leading a small team and implementing innovative solutions for clients.",
+    title: "Freelance AI & Full-Stack Engineer",
+    org: "Upwork",
+    date: "2024 – Present",
+    points: [
+      "Delivered 5-star rated solutions for international clients, focusing on AI-driven automations and robust web ecosystems.",
+      "Awarded Rising Talent status for consistent project success and high-quality clean code.",
+      "Specialized in transforming complex business requirements into scalable MVPs.",
+    ],
   },
   {
-    title: "Frontend Developer",
-    date: "2020 - 2022",
-    description:
-      "Building modern and responsive user interfaces with React and Tailwind CSS. UX/UI optimization and working in an Agile environment.",
-  },
-  {
-    title: "Trainee Programmer",
-    date: "2019 - 2020",
-    description:
-      "Involvement in small project development, maintenance and testing of web applications. Gain hands-on experience with JavaScript and Git.",
+    title: "Independent Project Developer",
+    org: "Self-directed",
+    date: "2023 – Present",
+    points: [
+      "Architected and deployed high-impact systems, including an automated posting engine for the EU Single Market (IMI) and secure B2B Escrow API integrations.",
+      "Focused on end-to-end development, from Supabase database architecture to responsive React frontends.",
+    ],
   },
 ];
 
-const accentColor = "bg-gradient-to-r from-cyan-400 to-pink-400 dark:from-pink-400 dark:to-cyan-400";
+const lineGradient = "bg-gradient-to-b from-indigo-500 to-slate-300";
 
 const Experience = () => {
   return (
     <section
       id="experience"
-      className="w-full py-12 px-4 flex flex-col items-center bg-[#232526] dark:bg-white"
+      className="flex w-full min-w-0 max-w-full flex-col items-center overflow-x-hidden border-t border-slate-200/80 bg-white py-16 px-gutter dark:border-slate-700/60 dark:bg-[#020617] sm:px-gutter-sm sm:py-20 lg:px-gutter-lg"
     >
-      <h2 className="text-3xl font-bold mb-10 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-400 dark:from-pink-400 dark:to-cyan-400">
+      <h2 className="mb-12 text-center font-display text-3xl font-bold text-slate-900 dark:text-slate-50 sm:mb-14 sm:text-4xl">
         Experience
       </h2>
-      <div className="relative max-w-3xl w-full">
-        <div className="absolute left-1/2 top-0 h-full w-1 -translate-x-1/2 bg-gradient-to-b from-cyan-400 to-pink-400 dark:from-pink-400 dark:to-cyan-400 opacity-40 z-0" />
-        <ul className="space-y-12">
+      <div className="relative w-full min-w-0 max-w-3xl">
+        <div
+          className={`absolute left-1/2 top-0 z-0 h-full w-px -translate-x-1/2 ${lineGradient} opacity-40`}
+        />
+        <ul className="space-y-16 sm:space-y-20">
           {experiences.map((exp, idx) => (
             <li
               key={exp.title}
-              className={`relative flex flex-col md:flex-row items-center md:items-stretch ${
+              className={`relative flex flex-col items-center md:flex-row ${
                 idx % 2 === 0
                   ? "md:flex-row-reverse md:justify-end"
                   : "md:justify-start"
               }`}
             >
               <span
-                className={`hidden md:block absolute left-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-4 border-white dark:border-gray-900 ${accentColor} z-10`}
-                style={{ top: 24 }}
+                className="absolute left-1/2 top-6 z-10 hidden h-3.5 w-3.5 -translate-x-1/2 rounded-ds-full border-2 border-white bg-indigo-500 shadow-[0_0_0_3px_rgba(79,70,229,0.2)] dark:border-slate-950 md:block"
+                aria-hidden
               />
               <div
-                className={`bg-[#2d2f38] dark:bg-white/80 rounded-xl shadow-md p-6 w-full md:w-1/2 border border-[#383a47] dark:border-gray-200 z-10 ${
+                className={`z-10 w-full min-w-0 max-w-full rounded-ds-xl border border-slate-200/90 bg-slate-50/50 p-6 shadow-sm backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/50 sm:p-8 md:w-1/2 ${
                   idx % 2 === 0 ? "md:mr-12" : "md:ml-12"
                 }`}
               >
-                <h3 className="text-xl font-semibold text-cyan-200 dark:text-gray-800 mb-1">
-                  {exp.title}
-                </h3>
-                <div className="text-pink-300 dark:text-cyan-400 font-medium mb-1">
-                  {exp.company}
+                <div className="mb-2 flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+                  <h3 className="font-display text-lg font-bold text-slate-900 dark:text-slate-50 sm:text-xl">
+                    {exp.title}
+                  </h3>
                 </div>
-                <div className="text-sm text-gray-400 dark:text-gray-600 mb-3">{exp.date}</div>
-                <p className="text-gray-200 dark:text-gray-700 text-base">{exp.description}</p>
+                <div className="mb-1 flex flex-wrap items-center gap-x-2 text-sm text-slate-500 dark:text-slate-400">
+                  <span className="font-medium text-indigo-600 dark:text-indigo-400">{exp.org}</span>
+                  <span className="text-slate-300 dark:text-slate-600" aria-hidden>
+                    |
+                  </span>
+                  <time className="font-medium text-slate-600 dark:text-slate-300">{exp.date}</time>
+                </div>
+                <ul className="mt-4 list-outside list-disc space-y-3 pl-5 text-left marker:text-indigo-600 dark:marker:text-indigo-400">
+                  {exp.points.map((point) => (
+                    <li
+                      key={point}
+                      className="pl-1 text-base leading-relaxed text-slate-600 dark:text-slate-300"
+                    >
+                      {point}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </li>
           ))}

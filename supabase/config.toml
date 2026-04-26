@@ -1,0 +1,11 @@
+# https://supabase.com/docs/guides/cli/config
+# Run: supabase link --project-ref <id>  (replaces project_id for remote)
+
+[api]
+enabled = true
+
+[db]
+# Point local CLI at your project when linked
+
+[functions.submit-contact]
+verify_jwt = true
