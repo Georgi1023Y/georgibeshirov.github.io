@@ -1,4 +1,4 @@
-# VertexForge Portfolio
+# Portfolio
 
 ![Status](https://img.shields.io/badge/status-production_ready-22c55e?style=for-the-badge&logo=vercel&logoColor=white)
 ![ROI Focused](https://img.shields.io/badge/ROI-Focused-14b8a6?style=for-the-badge&logo=cashapp&logoColor=white)
