@@ -29,3 +29,18 @@ dist-ssr
 .env.*.local
 .env.production
 .env.production.local
+.env.*
+!.env.example
+
+# Caches and tooling
+.eslintcache
+.cache
+.parcel-cache
+.npm
+.vite/
+coverage
+*.lcov
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
