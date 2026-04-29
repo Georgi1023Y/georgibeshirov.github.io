@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertTriangle, Check, CheckCircle2, Loader2, Sparkles } from "lucide-react";
+import { AlertTriangle, Check, CheckCircle2, Loader2, ShieldCheck, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
 import { isSupabaseConfigured } from "../supabaseClient";
 import { submitContactForm } from "../supabase/contactService";
@@ -165,6 +165,12 @@ const Contact = () => {
   const [fieldErrors, setFieldErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
+  const [fromUpworkVisitor, setFromUpworkVisitor] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setFromUpworkVisitor(params.get("from") === "upwork");
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -245,27 +251,36 @@ const Contact = () => {
           Start a high-trust build conversation
         </h2>
 
-        <motion.span
-          animate={{ scale: [1, 1.04, 1] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          className="mt-4 inline-flex items-center gap-2 rounded-ds-full border border-emerald-200/80 bg-emerald-50 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300/90"
-        >
-          <Sparkles className="h-3.5 w-3.5" />
-          Currently available for new high-impact projects
-        </motion.span>
+        {!fromUpworkVisitor && (
+          <motion.span
+            animate={{ scale: [1, 1.04, 1] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            className="mt-4 inline-flex items-center gap-2 rounded-ds-full border border-emerald-200/80 bg-emerald-50 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300/90"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            Currently available for new high-impact projects
+          </motion.span>
+        )}
 
         <p className="mb-8 mt-4 max-w-xl px-1 text-center text-pretty text-slate-600 dark:text-slate-300">
-          Send your project details below, or email{" "}
-          <a
-            href="mailto:beshirovgeorgi3@gmail.com"
-            className="font-medium text-indigo-600 underline underline-offset-2 dark:text-indigo-400"
-          >
-            beshirovgeorgi3@gmail.com
-          </a>
-          . BSc Computer Science, Sofia University (FMI) — engineering-first delivery.
+          {fromUpworkVisitor ? (
+            <>
+              You arrived from Upwork — please keep all project discussion inside Upwork&apos;s Message Center for compliance and faster routing.
+            </>
+          ) : (
+            <>
+              Send your project details below, or email{" "}
+              <a
+                href="mailto:beshirovgeorgi3@gmail.com"
+                className="font-medium text-indigo-600 underline underline-offset-2 dark:text-indigo-400"
+              >
+                beshirovgeorgi3@gmail.com
+              </a>
+            </>
+          )}
         </p>
 
-        {!isSupabaseConfigured && (
+        {!fromUpworkVisitor && !isSupabaseConfigured && (
           <p className="mb-6 max-w-xl text-center text-sm text-amber-800 dark:text-amber-200/90">
             Backend not configured. Set <code className="rounded bg-amber-100/80 px-1 py-0.5 text-[0.8em] dark:bg-amber-950/50">VITE_SUPABASE_URL</code> and{" "}
             <code className="rounded bg-amber-100/80 px-1 py-0.5 text-[0.8em] dark:bg-amber-950/50">VITE_SUPABASE_ANON_KEY</code> in{" "}
@@ -275,6 +290,28 @@ const Contact = () => {
         )}
 
         <div className="relative w-full max-w-xl min-w-0">
+          {fromUpworkVisitor ? (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={formTransition}
+              className="rounded-ds-2xl border border-[#14a800]/30 bg-emerald-50/60 px-6 py-10 text-center shadow-sm dark:border-[#14a800]/40 dark:bg-emerald-950/25 sm:px-10"
+              role="region"
+              aria-label="Upwork-only contact notice"
+            >
+              <ShieldCheck
+                className="mx-auto h-11 w-11 text-[#14a800]"
+                strokeWidth={1.75}
+                aria-hidden
+              />
+              <p className="mt-5 max-w-md mx-auto text-base font-semibold leading-snug text-slate-900 dark:text-slate-50">
+                Upwork verified profile.
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                Please use the Upwork Message Center for all inquiries — this keeps communications compliant and ensures timely responses.
+              </p>
+            </motion.div>
+          ) : (
           <AnimatePresence mode="wait" initial={false}>
             {sent ? (
               <SuccessOverlay
@@ -366,6 +403,7 @@ const Contact = () => {
               </motion.form>
             )}
           </AnimatePresence>
+          )}
         </div>
 
         <motion.div

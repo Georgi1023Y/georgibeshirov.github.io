@@ -5,6 +5,8 @@ import { FaGithub, FaInstagram } from "react-icons/fa";
 import { GraduationCap, Sparkles, Star, TrendingUp } from "lucide-react";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 import { Hero3DFallback } from "./hero/Hero3DFallback";
+import { LetsTalkUpworkLink } from "./LetsTalkUpworkLink";
+import { VerifiedIdentityBadge } from "./VerifiedIdentityBadge";
 
 const NeuralParticleMesh = lazy(() => import("./hero/NeuralParticleMesh"));
 
@@ -169,15 +171,6 @@ const Hero = () => {
     };
   }, [enable3D, reducedMotion]);
 
-  const scrollToContact = (e) => {
-    e.preventDefault();
-    const el = document.getElementById("contact");
-    if (el) {
-      const y = el.getBoundingClientRect().top + window.pageYOffset - 72;
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
-  };
-
   return (
     <section
       className="relative z-10 flex min-h-[100svh] min-w-0 max-w-full flex-col items-center justify-center overflow-hidden bg-transparent px-gutter pb-12 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] text-center text-slate-900 dark:text-slate-50 sm:px-gutter-sm lg:px-gutter-lg"
@@ -207,6 +200,10 @@ const Hero = () => {
           >
             Georgi Beshirov
           </motion.p>
+
+          <div className="mb-5 flex w-full justify-center px-2">
+            <VerifiedIdentityBadge />
+          </div>
 
           <motion.h1
             initial={{ opacity: 0, y: 12 }}
@@ -276,13 +273,7 @@ const Hero = () => {
             transition={{ duration: 0.45, delay: 0.28, ease }}
             className="mb-10 flex w-full max-w-2xl flex-col items-center gap-3 sm:flex-row sm:justify-center"
           >
-            <a
-              href="#contact"
-              onClick={scrollToContact}
-              className="animate-soft-cta-pulse inline-flex min-h-[48px] w-full items-center justify-center rounded-ds-full bg-indigo-600 px-6 py-3 text-center text-sm font-semibold text-white shadow-md shadow-indigo-600/25 ring-2 ring-indigo-500/20 transition hover:bg-indigo-500 dark:shadow-indigo-900/40 sm:w-auto sm:px-8"
-            >
-              Ready to build the next big thing? Let&apos;s discuss your project ROI.
-            </a>
+            <LetsTalkUpworkLink className="w-full min-h-[48px] px-8 py-3 text-sm sm:w-auto" />
           </motion.div>
 
           <motion.p

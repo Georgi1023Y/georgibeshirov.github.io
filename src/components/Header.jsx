@@ -3,6 +3,7 @@ import { useTheme } from "next-themes";
 import {
   Award,
   Briefcase,
+  Code2,
   Home,
   Layout,
   Mail,
@@ -51,21 +52,15 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 z-50 w-full max-w-full border-b border-slate-200/80 bg-white/80 pt-[env(safe-area-inset-top,0px)] shadow-sm backdrop-blur-xl backdrop-saturate-150 dark:border-slate-700/60 dark:bg-slate-950/75">
       <nav className="mx-auto flex h-16 min-w-0 max-w-content items-center justify-between gap-3 px-gutter sm:px-gutter-sm lg:px-gutter-lg">
-        <span className="min-w-0 max-w-[56%] truncate pr-1 font-display text-base font-bold tracking-tight text-slate-900 dark:text-slate-50 sm:max-w-none sm:text-lg">
+        <span className="inline-flex min-w-0 max-w-[56%] items-center gap-2 truncate pr-1 font-display text-base font-bold tracking-tight text-slate-900 dark:text-slate-50 sm:max-w-none sm:text-lg">
+          <Code2
+            className="h-5 w-5 shrink-0 text-indigo-600 dark:text-indigo-400"
+            aria-hidden
+            strokeWidth={2.25}
+          />
           Georgi Beshirov
         </span>
         <div className="flex min-w-0 flex-shrink-0 items-center gap-1.5 sm:gap-2">
-          <button
-            type="button"
-            onClick={(e) => {
-              handleScrollToSection(e, "contact");
-              setOpen(false);
-            }}
-            className="animate-soft-cta-pulse hidden min-h-[40px] items-center justify-center rounded-ds-full bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-600/20 ring-2 ring-indigo-500/15 transition hover:bg-indigo-500 sm:inline-flex sm:px-4 sm:text-sm"
-            aria-label="Let's talk — scroll to contact"
-          >
-            Let&apos;s Talk
-          </button>
           {mounted && (
             <button
               type="button"
@@ -148,18 +143,6 @@ const Header = () => {
       {open && (
         <div className="border-t border-slate-200/80 bg-white/95 py-3 backdrop-blur-xl dark:border-slate-700/60 dark:bg-slate-950/90 md:hidden">
           <ul className="mx-auto flex max-w-content flex-col gap-0.5 px-4">
-            <li>
-              <button
-                type="button"
-                onClick={(e) => {
-                  handleScrollToSection(e, "contact");
-                  setOpen(false);
-                }}
-                className="animate-soft-cta-pulse mb-2 w-full min-h-[48px] rounded-ds-full bg-indigo-600 py-3 text-sm font-semibold text-white shadow-md ring-2 ring-indigo-500/20"
-              >
-                Let&apos;s Talk
-              </button>
-            </li>
             {navLinks.map((link) => {
               const Icon = link.Icon;
               return (

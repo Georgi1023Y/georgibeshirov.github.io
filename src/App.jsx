@@ -9,6 +9,7 @@ const Experience = lazy(() => import("./components/Experience"));
 const Skills = lazy(() => import("./components/Skills"));
 const Projects = lazy(() => import("./components/Projects"));
 const DevelopmentProcess = lazy(() => import("./components/DevelopmentProcess"));
+const AsynchronousWorkflow = lazy(() => import("./components/AsynchronousWorkflow"));
 const Education = lazy(() => import("./components/Education"));
 const Testimonials = lazy(() => import("./components/Testimonials"));
 const Certifications = lazy(() => import("./components/Certifications"));
@@ -76,6 +77,7 @@ function App() {
             <Projects />
             <Certifications />
             <DevelopmentProcess />
+            <AsynchronousWorkflow />
             <Testimonials />
             <Contact />
             <Footer />

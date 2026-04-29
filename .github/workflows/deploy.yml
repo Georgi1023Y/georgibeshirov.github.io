@@ -24,6 +24,8 @@ jobs:
       # Vite only exposes vars prefixed with VITE_; available to npm run build and any script in this job.
       VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
       VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      # Optional: full Upwork profile URL for primary CTAs (embedded at build time).
+      VITE_UPWORK_PROFILE_URL: ${{ secrets.VITE_UPWORK_PROFILE_URL }}
 
     steps:
       - name: Checkout

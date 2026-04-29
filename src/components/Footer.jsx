@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { ShieldCheck } from "lucide-react";
 import { FaGithub, FaInstagram } from "react-icons/fa";
+import { LetsTalkUpworkLink } from "./LetsTalkUpworkLink";
 
 const Footer = () => {
   return (
@@ -12,15 +14,23 @@ const Footer = () => {
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="mb-6 max-w-lg px-4 text-sm text-slate-600 dark:text-slate-400"
       >
-        Ready to build the next big thing?{" "}
-        <a
-          href="#contact"
-          className="font-medium text-indigo-600 underline decoration-indigo-300 underline-offset-2 transition hover:text-indigo-500 dark:text-indigo-400 dark:decoration-indigo-500/50"
-        >
-          Let&apos;s discuss your project ROI
-        </a>
-        .
+        Ready to build the next big thing? Async-first delivery with daily visibility — connect on Upwork below.
       </motion.p>
+      <p className="mx-auto mb-8 flex max-w-2xl flex-wrap items-center justify-center gap-2 px-4 text-center text-xs leading-relaxed text-[#14a800] dark:text-[#14a800]">
+        <ShieldCheck className="h-4 w-4 shrink-0 opacity-90" strokeWidth={2} aria-hidden />
+        <span>
+          For Upwork clients: Please communicate and hire me only through the Upwork platform to comply with their Terms of Service.
+        </span>
+      </p>
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+        className="mb-8 flex w-full justify-center px-4"
+      >
+        <LetsTalkUpworkLink className="min-h-[48px] px-8 py-3 text-sm shadow-lg shadow-[#14a800]/20" />
+      </motion.div>
       <div className="mb-4 flex gap-6">
         <a
           href="https://github.com/Georgi1023Y"
