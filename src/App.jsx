@@ -18,7 +18,12 @@ const Footer = lazy(() => import("./components/Footer"));
 function App() {
   /** GitHub Pages: after 404.html → index.html, scroll once to the section matching the path (no delayed re-run — avoids fighting user scroll). */
   useEffect(() => {
-    const path = window.location.pathname.replace(/\/index\.html$/i, "") || "/";
+    const baseUrl = import.meta.env.BASE_URL || "/";
+    const basePath = baseUrl.replace(/\/$/, "");
+    let path = window.location.pathname.replace(/\/index\.html$/i, "") || "/";
+    if (basePath && basePath !== "/" && path.startsWith(basePath)) {
+      path = path.slice(basePath.length) || "/";
+    }
     if (path === "/" || path === "") return;
 
     const seg = path
@@ -48,7 +53,8 @@ function App() {
   useEffect(() => {
     if (!import.meta.env.PROD || !("serviceWorker" in navigator)) return undefined;
     const onLoad = () => {
-      void navigator.serviceWorker.register("/sw.js").catch(() => {});
+      const swUrl = new URL("sw.js", `${window.location.origin}${import.meta.env.BASE_URL}`).href;
+      void navigator.serviceWorker.register(swUrl).catch(() => {});
     };
     window.addEventListener("load", onLoad);
     return () => window.removeEventListener("load", onLoad);

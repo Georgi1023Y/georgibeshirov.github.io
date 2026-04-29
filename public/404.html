@@ -6,19 +6,21 @@
     <title>Redirecting…</title>
     <script>
       (function (l) {
+        /** Must match Vite `base` in vite.config.js (GitHub Project Pages). */
+        var BASE = "/georgibeshirov.github.io";
         var p = l.pathname;
-        if (p === "/" || p === "/index.html") {
-          l.replace(l.origin + "/");
+        if (p === BASE || p === BASE + "/" || p === BASE + "/index.html") {
+          l.replace(l.origin + BASE + "/");
           return;
         }
         try {
           sessionStorage.setItem("ghp_spa_path", p + l.search + l.hash);
         } catch (e) {}
-        l.replace(l.origin + "/index.html");
+        l.replace(l.origin + BASE + "/index.html");
       })(location);
     </script>
   </head>
   <body>
-    <p><a href="/index.html">Loading site…</a></p>
+    <p><a href="./index.html">Loading site…</a></p>
   </body>
 </html>
