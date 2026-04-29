@@ -4,8 +4,6 @@ import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useTheme } from "next-themes";
 
-const R3F_EVENT_SOURCE = typeof document !== "undefined" ? document.body : undefined;
-
 function fibonacciSphere(i, n, r) {
   const phi = Math.acos(1 - (2 * (i + 0.5)) / n);
   const theta = Math.sqrt(Math.PI * n) * phi;
@@ -303,8 +301,7 @@ function DigitalHelixBackground({ pointerRef, lowPower }) {
   return (
     <div className="pointer-events-none h-full w-full touch-pan-y" aria-hidden>
       <Canvas
-        className="!h-full !w-full touch-pan-y"
-        eventSource={R3F_EVENT_SOURCE}
+        className="!h-full !w-full touch-pan-y pointer-events-none"
         dpr={lowPower ? [1, 1] : [1, 1.25]}
         gl={{
           antialias: !lowPower,

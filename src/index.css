@@ -5,9 +5,11 @@
 @layer base {
   html {
     @apply min-h-dvh font-sans antialiased;
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
+    scroll-snap-type: none;
     scroll-padding-top: calc(5rem + env(safe-area-inset-top, 0px));
     overflow-x: hidden;
+    overflow-anchor: none;
   }
 
   html,
@@ -22,6 +24,8 @@
     max-width: 100%;
     min-height: 0;
     overflow-x: hidden;
+    scroll-snap-type: none;
+    overflow-anchor: none;
   }
 
   section[id] {

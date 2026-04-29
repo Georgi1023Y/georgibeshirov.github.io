@@ -2,7 +2,6 @@ import { ThemeProvider } from "next-themes";
 import { lazy, Suspense, useEffect } from "react";
 import Hero from "./components/Hero";
 import Header from "./components/Header";
-import DeferredSection from "./components/DeferredSection";
 import { PortfolioToaster } from "./components/PortfolioToaster";
 
 const AboutMe = lazy(() => import("./components/AboutMe"));
@@ -17,47 +16,42 @@ const Contact = lazy(() => import("./components/Contact"));
 const Footer = lazy(() => import("./components/Footer"));
 
 function App() {
-  /** GitHub Pages: after 404.html → index.html, restore /projects and scroll to #projects. */
+  /** GitHub Pages: after 404.html → index.html, scroll once to the section matching the path (no delayed re-run — avoids fighting user scroll). */
   useEffect(() => {
-    const run = () => {
-      const path = window.location.pathname;
-      if (path === "/" || path === "/index.html") return;
-      const seg = path
-        .replace(/^\//, "")
-        .split("/")
-        .filter(Boolean)[0]
-        ?.replace(/\.html$/i, "");
-      if (!seg) return;
-      if (seg === "index" || seg === "index.html") return;
-      const id = seg === "home" ? "top" : seg;
+    const path = window.location.pathname.replace(/\/index\.html$/i, "") || "/";
+    if (path === "/" || path === "") return;
+
+    const seg = path
+      .replace(/^\//, "")
+      .split("/")
+      .filter(Boolean)[0]
+      ?.replace(/\.html$/i, "");
+    if (!seg || seg === "index") return;
+
+    const id = seg === "home" ? "top" : seg;
+    const scrollOnce = () => {
       if (id === "top") {
         window.scrollTo({ top: 0, behavior: "auto" });
         return;
       }
       const el = document.getElementById(id);
-      if (!el) {
-        return;
-      }
+      if (!el) return;
       const yOffset = 72;
       const y = el.getBoundingClientRect().top + window.pageYOffset - yOffset;
       window.scrollTo({ top: y, behavior: "auto" });
     };
-    run();
-    const t = window.setTimeout(run, 400);
-    return () => window.clearTimeout(t);
+
+    requestAnimationFrame(scrollOnce);
   }, []);
 
+  /** Production only — avoids stale cached bundles while iterating locally; sw.js may not exist in dev. */
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      const onLoad = () => {
-        void navigator.serviceWorker.register("/sw.js").catch(() => {
-          // Registration is optional; avoid console noise in production.
-        });
-      };
-      window.addEventListener('load', onLoad);
-      return () => window.removeEventListener('load', onLoad);
-    }
-    return undefined;
+    if (!import.meta.env.PROD || !("serviceWorker" in navigator)) return undefined;
+    const onLoad = () => {
+      void navigator.serviceWorker.register("/sw.js").catch(() => {});
+    };
+    window.addEventListener("load", onLoad);
+    return () => window.removeEventListener("load", onLoad);
   }, []);
 
   return (
@@ -70,29 +64,15 @@ function App() {
           <Hero />
           <Suspense fallback={null}>
             <AboutMe />
-            <DeferredSection minHeight={420}>
-              <Experience />
-            </DeferredSection>
-            <DeferredSection minHeight={260}>
-              <Education />
-            </DeferredSection>
-            <DeferredSection minHeight={420}>
-              <Skills />
-            </DeferredSection>
+            <Experience />
+            <Education />
+            <Skills />
             <Projects />
-            <DeferredSection minHeight={400}>
-              <Certifications />
-            </DeferredSection>
-            <DeferredSection minHeight={500}>
-              <DevelopmentProcess />
-            </DeferredSection>
-            <DeferredSection minHeight={380}>
-              <Testimonials />
-            </DeferredSection>
+            <Certifications />
+            <DevelopmentProcess />
+            <Testimonials />
             <Contact />
-            <DeferredSection minHeight={180}>
-              <Footer />
-            </DeferredSection>
+            <Footer />
           </Suspense>
         </div>
       </div>

@@ -36,6 +36,10 @@ const Header = () => {
 
   const handleScrollToSection = (e, id) => {
     e.preventDefault();
+    if (id === "top") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     const el = document.getElementById(id);
     if (el) {
       const yOffset = 72;

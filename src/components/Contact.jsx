@@ -200,6 +200,7 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     if (!isSupabaseConfigured) {
       toast.error("Contact form: add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, then restart the dev server.", {
         icon: <AlertTriangle className="h-5 w-5 shrink-0 text-rose-500" strokeWidth={2.25} />,
@@ -210,9 +211,9 @@ const Contact = () => {
 
     setIsSubmitting(true);
     const { data, error, fnError } = await submitContactForm({
-      name: form.name.trim(),
+      full_name: form.name.trim(),
       email: form.email.trim(),
-      message: form.message.trim(),
+      content: form.message.trim(),
     });
     setIsSubmitting(false);
 

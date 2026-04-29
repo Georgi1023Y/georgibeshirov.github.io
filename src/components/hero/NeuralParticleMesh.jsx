@@ -3,9 +3,6 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
 
-/** Bind R3F’s event system to the document so the Canvas wrapper can stay pointer-events: none and never steal scroll. */
-const R3F_EVENT_SOURCE = typeof document !== "undefined" ? document.body : undefined;
-
 /** Fixed topology: never change count or buffer lengths after mount (avoids R3F buffer size mismatch). */
 const PARTICLE_COUNT = 480;
 const EDGE_MAX_DIST = 0.38;
@@ -82,7 +79,7 @@ function NeuralScene({ pointerRef, lowPower, isDark }) {
   const frameHalted = useRef(false);
   const loggedFrameError = useRef(false);
 
-  const pointCount = PARTICLE_COUNT;
+  const particleCount = PARTICLE_COUNT;
   const particleSize = lowPower ? 0.022 : 0.018;
 
   const { basePositions, edgePairs, lineVertexCount } = useMemo(() => {
@@ -130,10 +127,10 @@ function NeuralScene({ pointerRef, lowPower, isDark }) {
   const palette = isDark ? COLORS.dark : COLORS.light;
 
   useFrame((_, delta) => {
-    if (frameHalted.current) {
-      return;
-    }
     try {
+      if (frameHalted.current) {
+        return;
+      }
       t.current += delta;
       const p = pointerRef.current;
       smooth.current.x = THREE.MathUtils.lerp(smooth.current.x, p.x, 0.06);
@@ -153,7 +150,7 @@ function NeuralScene({ pointerRef, lowPower, isDark }) {
       }
 
       const breathe = 1 + Math.sin(t.current * 0.45) * 0.02;
-      for (let i = 0; i < pointCount; i++) {
+      for (let i = 0; i < particleCount; i++) {
         const o = i * 3;
         const bx = basePositions[o] * breathe;
         const by = basePositions[o + 1] * breathe;
@@ -195,9 +192,9 @@ function NeuralScene({ pointerRef, lowPower, isDark }) {
     }
   });
 
-  const pointsKey = `neural-points-${pointCount}`;
+  const pointsKey = `particles-${particleCount}`;
   const lineVertexCountForAttr = linePositions.length / 3;
-  const linesKey = `neural-lines-${lineVertexCount}`;
+  const linesKey = `line-segments-${particleCount}`;
 
   return (
     <group ref={root} position={[0, 0.08, 0]}>
@@ -205,7 +202,7 @@ function NeuralScene({ pointerRef, lowPower, isDark }) {
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
-            count={pointCount}
+            count={particleCount}
             array={pointsAnimated}
             itemSize={3}
             usage={THREE.DynamicDrawUsage}
@@ -250,8 +247,8 @@ export default function NeuralParticleMesh({ pointerRef, lowPower, isDark }) {
       aria-hidden
     >
       <Canvas
-        className="!h-full !w-full touch-pan-y"
-        eventSource={R3F_EVENT_SOURCE}
+        tabIndex={-1}
+        className="!h-full !w-full touch-pan-y pointer-events-none outline-none"
         dpr={lowPower ? [1, 1] : [1, 1.25]}
         gl={{
           antialias: !lowPower,
@@ -273,8 +270,13 @@ export default function NeuralParticleMesh({ pointerRef, lowPower, isDark }) {
         frameloop="always"
         onCreated={({ gl, scene }) => {
           const el = gl.domElement;
+          el.tabIndex = -1;
+          el.setAttribute("aria-hidden", "true");
           el.style.pointerEvents = "none";
           el.style.touchAction = "pan-y";
+          if (document.activeElement === el) {
+            el.blur();
+          }
           if (scene) scene.background = null;
         }}
       >

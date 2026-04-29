@@ -21,7 +21,7 @@ const HeroParticleLayer = memo(function HeroParticleLayer({
 }) {
   return (
     <div
-      className="pointer-events-none fixed left-0 top-0 z-[-1] h-[100svh] w-screen touch-pan-y overflow-hidden"
+      className="pointer-events-none absolute inset-0 z-0 min-h-0 w-full touch-pan-y overflow-hidden"
       aria-hidden
     >
       {reducedMotion || !enable3D ? (
@@ -48,6 +48,7 @@ const Hero = () => {
       : false
   );
   const [enable3D, setEnable3D] = useState(false);
+  const [allowHero3D, setAllowHero3D] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
@@ -65,15 +66,56 @@ const Hero = () => {
       setEnable3D(false);
       return;
     }
+    let cancelled = false;
+    let idleId = null;
+    let retryTimer = null;
+    /** After any wheel/touch/scroll, avoid inserting WebGL until quiet — prevents scroll-into-view on canvas / anchoring fights. */
+    let userGestured = false;
+    let lastGestureAt = 0;
+    const quietMs = 450;
+
+    const markGesture = () => {
+      userGestured = true;
+      lastGestureAt = Date.now();
+    };
+    window.addEventListener("wheel", markGesture, { passive: true });
+    window.addEventListener("touchmove", markGesture, { passive: true });
+    window.addEventListener("scroll", markGesture, { passive: true });
+
+    const enableAfterPaint = () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (!cancelled) setEnable3D(true);
+        });
+      });
+    };
+
+    const scheduleEnable = () => {
+      if (cancelled) return;
+      if (userGestured && Date.now() - lastGestureAt < quietMs) {
+        const wait = quietMs - (Date.now() - lastGestureAt) + 20;
+        retryTimer = window.setTimeout(scheduleEnable, wait);
+        return;
+      }
+      retryTimer = null;
+      enableAfterPaint();
+    };
+
     const w = window;
-    const idle = w.requestIdleCallback
-      ? w.requestIdleCallback(() => setEnable3D(true), { timeout: 1500 })
-      : w.setTimeout(() => setEnable3D(true), 700);
+    idleId = w.requestIdleCallback
+      ? w.requestIdleCallback(scheduleEnable, { timeout: 2400 })
+      : w.setTimeout(scheduleEnable, 900);
+
     return () => {
-      if (w.cancelIdleCallback && typeof idle === "number") {
-        w.cancelIdleCallback(idle);
-      } else {
-        clearTimeout(idle);
+      cancelled = true;
+      window.removeEventListener("wheel", markGesture);
+      window.removeEventListener("touchmove", markGesture);
+      window.removeEventListener("scroll", markGesture);
+      if (retryTimer != null) clearTimeout(retryTimer);
+      if (w.cancelIdleCallback && idleId != null && typeof idleId === "number") {
+        w.cancelIdleCallback(idleId);
+      } else if (idleId != null) {
+        clearTimeout(idleId);
       }
     };
   }, [reducedMotion]);
@@ -88,6 +130,45 @@ const Hero = () => {
     return () => window.removeEventListener("pointermove", onPointer);
   }, []);
 
+  useEffect(() => {
+    if (reducedMotion || !enable3D) {
+      setAllowHero3D(false);
+      return;
+    }
+
+    let rafId = null;
+    const updateVisibility = () => {
+      const hero = document.getElementById("top");
+      if (!hero) {
+        setAllowHero3D(false);
+        return;
+      }
+      const rect = hero.getBoundingClientRect();
+      const heroTouchesViewport = rect.bottom > 0 && rect.top < window.innerHeight;
+      const nearTop = window.scrollY < window.innerHeight * 0.65;
+      setAllowHero3D(heroTouchesViewport && nearTop);
+    };
+
+    const onScrollOrResize = () => {
+      if (rafId != null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        updateVisibility();
+      });
+    };
+
+    updateVisibility();
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize);
+    return () => {
+      if (rafId != null) {
+        cancelAnimationFrame(rafId);
+      }
+      window.removeEventListener("scroll", onScrollOrResize);
+      window.removeEventListener("resize", onScrollOrResize);
+    };
+  }, [enable3D, reducedMotion]);
+
   const scrollToContact = (e) => {
     e.preventDefault();
     const el = document.getElementById("contact");
@@ -98,26 +179,26 @@ const Hero = () => {
   };
 
   return (
-    <>
+    <section
+      className="relative z-10 flex min-h-[100svh] min-w-0 max-w-full flex-col items-center justify-center overflow-hidden bg-transparent px-gutter pb-12 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] text-center text-slate-900 dark:text-slate-50 sm:px-gutter-sm lg:px-gutter-lg"
+      id="top"
+    >
+      {/* Three.js lives only inside this section — it scrolls away; lower sections have no WebGL behind them */}
       <HeroParticleLayer
         reducedMotion={reducedMotion}
-        enable3D={enable3D}
+        enable3D={enable3D && allowHero3D}
         mounted={mounted}
         isDark={isDark}
         lowPower={lowPower}
         pointerRef={pointerRef}
       />
 
-      <section
-        className="relative z-10 flex min-h-[100svh] min-w-0 max-w-full flex-col items-center justify-center overflow-x-hidden bg-transparent px-gutter pb-12 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] text-center text-slate-900 dark:text-slate-50 sm:px-gutter-sm lg:px-gutter-lg"
-        id="top"
-      >
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-28 bg-gradient-to-b from-transparent to-white dark:to-[#020617] sm:h-36"
-          aria-hidden
-        />
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-28 bg-gradient-to-b from-transparent to-white dark:to-[#020617] sm:h-36"
+        aria-hidden
+      />
 
-        <div className="relative z-10 flex w-full min-w-0 max-w-4xl flex-col items-center">
+      <div className="relative z-10 flex w-full min-w-0 max-w-4xl flex-col items-center">
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -235,8 +316,7 @@ const Hero = () => {
             </a>
           </div>
         </div>
-      </section>
-    </>
+    </section>
   );
 };
 

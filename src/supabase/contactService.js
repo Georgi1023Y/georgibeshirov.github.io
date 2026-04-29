@@ -23,14 +23,19 @@ function logCredentialDebug(context, extra) {
 
 /**
  * Inserts a contact form row (anon INSERT via RLS on public.messages).
- * @param {{ name: string; email: string; message: string }} payload
- * @returns {Promise<{ data: { success: true; id: string; created_at: string } | null, error: import("@supabase/supabase-js").PostgrestError | Error | null, fnError: string | null }>}
+ * Uses `.insert()` only (no `.select()`) so RLS does not require SELECT on the row.
+ * @param {{ full_name: string; email: string; content: string }} payload
+ * @returns {Promise<{ data: { success: true } | null, error: import("@supabase/supabase-js").PostgrestError | Error | null, fnError: string | null }>}
  */
 export async function submitContactForm(payload) {
   if (import.meta.env.DEV) {
     console.log("[Contact flow] submitContactForm: start", {
       step: 1,
-      formPayload: { name: payload.name, email: payload.email, messageLength: payload.message?.length },
+      formPayload: {
+        full_name: payload.full_name,
+        email: payload.email,
+        contentLength: payload.content?.length,
+      },
     });
   }
 
@@ -57,23 +62,23 @@ export async function submitContactForm(payload) {
     };
   }
 
-  const row = {
-    full_name: payload.name,
+  const insertPayload = {
+    full_name: payload.full_name,
     email: payload.email,
-    content: payload.message,
+    content: payload.content,
   };
 
   try {
     if (import.meta.env.DEV) {
-      console.log("[Contact flow] insert: payload (form) before .insert():", { step: 2, payload });
-      console.log("[Contact flow] insert: row (DB columns) about to be sent", { step: 3, row });
+      console.log("[Contact flow] insert: incoming payload", { step: 2, payload });
+      console.log("[Contact flow] insert: exact keys sent to Supabase", {
+        step: 3,
+        keys: Object.keys(insertPayload),
+        insertPayload,
+      });
     }
 
-    const { data, error } = await supabase
-      .from("messages")
-      .insert(row)
-      .select("id, created_at")
-      .single();
+    const { error } = await supabase.from("messages").insert(insertPayload);
 
     if (error) {
       console.error("[Contact flow] insert: failed (PostgREST returned error object)", error);
@@ -100,14 +105,24 @@ export async function submitContactForm(payload) {
           hint: "Dashboard → Settings → API: use anon public JWT (eyJ…) if publishable key fails.",
         });
       }
+      console.error("[Contact flow] messages.insert result", { ok: false, error });
       return { data: null, error, fnError: error.message };
     }
 
-    const successPayload = { success: true, id: data.id, created_at: data.created_at };
+    const successPayload = { success: true };
     if (import.meta.env.DEV) {
-      console.log("[Contact flow] insert: Success — returned data (object)", { step: 4, data: successPayload });
-      console.table([{ id: data.id, created_at: data.created_at, success: true }]);
-      console.log("[Contact flow] submitContactForm: complete (ok)");
+      console.info("[Contact flow] messages.insert result — OK", {
+        ok: true,
+        table: "messages",
+        columnsSent: Object.keys(insertPayload),
+        insertPayload,
+      });
+    } else {
+      console.info("[Contact flow] messages.insert OK", {
+        ok: true,
+        columns: ["full_name", "email", "content"],
+        contentLength: insertPayload.content.length,
+      });
     }
     return {
       data: successPayload,

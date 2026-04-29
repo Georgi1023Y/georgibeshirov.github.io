@@ -1,6 +1,6 @@
 /**
  * Shown while the WebGL chunk loads (Suspense) or for reduced-motion preference.
- * Full-viewport; matches theme when used inside fixed z-[-1] wrapper.
+ * Fills the hero particle layer (absolute inset inside #top only — not full-document fixed).
  */
 export function Hero3DFallback({ isDark = false }) {
   if (isDark) {
