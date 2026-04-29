@@ -1,5 +1,6 @@
-# GitHub Pages (User site: org.github.io). Build injects Vite env from repository secrets.
-# After first push: Settings → Pages → Build and deployment: Source = "GitHub Actions".
+# GitHub Pages — build injects Vite env from repository Secrets (Settings → Secrets and variables → Actions).
+# Required secrets: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY (embedded at build time; restart deploy after rotating keys).
+# Pages: Settings → Pages → Build and deployment → Source = GitHub Actions.
 name: Deploy to GitHub Pages
 
 on:
@@ -19,6 +20,11 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # Vite only exposes vars prefixed with VITE_; available to npm run build and any script in this job.
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,11 +39,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Ensure Supabase secrets are configured for production build
+        run: |
+          if [ -z "${VITE_SUPABASE_URL}" ]; then
+            echo "::error::Missing Actions secret VITE_SUPABASE_URL — add it under repo Settings → Secrets → Actions."
+            exit 1
+          fi
+          if [ -z "${VITE_SUPABASE_ANON_KEY}" ]; then
+            echo "::error::Missing Actions secret VITE_SUPABASE_ANON_KEY — add it under repo Settings → Secrets → Actions."
+            exit 1
+          fi
+          echo "VITE_SUPABASE_* env vars present for Vite build (values not printed)."
+
       - name: Build
         run: npm run build
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
