@@ -135,18 +135,18 @@ const Projects = () => {
   return (
     <section
       id="projects"
-      className="w-full min-w-0 max-w-full overflow-x-hidden border-t border-slate-200/80 bg-slate-50/50 py-16 px-gutter dark:border-slate-700/60 dark:bg-slate-950/40 sm:py-20 sm:px-gutter-sm lg:px-gutter-lg"
+      className="w-full min-w-0 max-w-full overflow-x-hidden border-t border-slate-200/80 bg-slate-50/50 px-4 py-12 dark:border-slate-700/60 dark:bg-slate-950/40 sm:px-gutter-sm sm:py-16 lg:px-gutter-lg lg:py-20"
     >
       <div className="mx-auto max-w-content">
-        <h2 className="mb-3 text-center font-display text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl">
+        <h2 className="mb-2 text-center font-display text-2xl font-bold leading-tight text-slate-900 dark:text-slate-50 md:text-3xl lg:text-4xl">
           Impact &amp; case studies
         </h2>
-        <p className="mx-auto mb-12 max-w-2xl text-center text-slate-600 dark:text-slate-400 sm:mb-14 sm:text-base">
+        <p className="mx-auto mb-8 max-w-2xl text-center text-sm text-slate-600 dark:text-slate-400 sm:mb-10 sm:text-base md:mb-14 lg:text-lg">
           Clear problem–solution narrative with measurable impact: performance, automation, and
           secure, reliable operations.
         </p>
 
-        <ul ref={ref} className="flex flex-col gap-10 sm:gap-12">
+        <ul ref={ref} className="flex flex-col gap-8 sm:gap-10 md:gap-12">
           {projects.map((project, index) => (
             <motion.li
               key={project.title}
@@ -154,7 +154,7 @@ const Projects = () => {
               initial="hidden"
               animate={inView ? "visible" : "hidden"}
               variants={itemVariants}
-              className="overflow-hidden rounded-ds-2xl border border-slate-200/90 bg-slate-50/50 p-6 shadow-sm backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/50 sm:p-8"
+              className="overflow-hidden rounded-ds-2xl border border-slate-200/90 bg-slate-50/50 p-4 shadow-sm backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/50 sm:p-6 md:p-8"
             >
               <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex items-start gap-2">
@@ -163,7 +163,7 @@ const Projects = () => {
                   ) : (
                     <MessageSquare className="mt-0.5 h-5 w-5 shrink-0 text-indigo-600 dark:text-indigo-400" />
                   )}
-                  <h3 className="text-left font-display text-xl font-bold capitalize text-slate-900 dark:text-slate-50 sm:text-2xl">
+                  <h3 className="text-left font-display text-xl font-bold capitalize leading-snug text-slate-900 dark:text-slate-50 sm:text-2xl">
                     {project.title}
                   </h3>
                 </div>
@@ -180,7 +180,7 @@ const Projects = () => {
                 )}
               </div>
 
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-6 lg:grid-cols-2">
                 <div>
                   <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-rose-600/90 dark:text-rose-400/90">
                     Problem

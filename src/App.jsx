@@ -64,7 +64,7 @@ function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <PortfolioToaster />
-      <div className="relative min-h-dvh w-full min-w-0 max-w-full overflow-x-hidden bg-transparent text-slate-900 dark:text-slate-50">
+      <div className="relative min-h-dvh w-full min-w-0 max-w-full overflow-x-hidden bg-white text-slate-900 dark:bg-[#020617] dark:text-slate-50">
         <div className="bg-grain" aria-hidden="true" />
         <div className="relative z-10 min-w-0 max-w-full">
           <Header />

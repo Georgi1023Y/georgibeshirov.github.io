@@ -112,7 +112,7 @@ function SuccessOverlay({ onReset }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10 }}
       transition={formTransition}
-      className="relative overflow-hidden rounded-ds-2xl border border-slate-200/90 bg-white p-7 text-center shadow-lg backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/50 sm:p-10"
+      className="relative overflow-hidden rounded-ds-2xl border border-slate-200/90 bg-white p-5 text-center shadow-lg backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/50 sm:p-8 md:p-10"
     >
       <div className="pointer-events-none absolute inset-0">
         {confetti.map((piece) => (
@@ -140,10 +140,10 @@ function SuccessOverlay({ onReset }) {
         <Check className="h-8 w-8 text-emerald-600" />
       </motion.div>
 
-      <h3 className="font-display text-2xl font-bold text-slate-900 dark:text-slate-50">
+      <h3 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50 md:text-2xl lg:text-3xl">
         Thank you — I&apos;ll get back to you soon.
       </h3>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-300 sm:text-base">
+      <p className="mt-2 text-xs text-slate-600 dark:text-slate-300 sm:text-sm md:text-base">
         Your message was saved securely. I typically reply within one business day.
       </p>
 
@@ -244,10 +244,10 @@ const Contact = () => {
   return (
     <section
       id="contact"
-      className="w-full min-w-0 max-w-full overflow-x-hidden border-t border-slate-200/80 bg-white px-gutter py-16 text-slate-900 dark:border-slate-700/60 dark:bg-[#020617] sm:px-gutter-sm sm:py-20 lg:px-gutter-lg"
+      className="w-full min-w-0 max-w-full overflow-x-hidden border-t border-slate-200/80 bg-white px-4 py-12 text-slate-900 dark:border-slate-700/60 dark:bg-[#020617] sm:px-gutter-sm sm:py-16 lg:px-gutter-lg lg:py-20"
     >
       <div className="mx-auto flex w-full max-w-content flex-col items-center">
-        <h2 className="text-center font-display text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl">
+        <h2 className="text-center font-display text-2xl font-bold leading-tight text-slate-900 dark:text-slate-50 md:text-3xl lg:text-4xl">
           Start a high-trust build conversation
         </h2>
 
@@ -262,7 +262,7 @@ const Contact = () => {
           </motion.span>
         )}
 
-        <p className="mb-8 mt-4 max-w-xl px-1 text-center text-pretty text-slate-600 dark:text-slate-300">
+        <p className="mb-6 mt-3 max-w-xl px-1 text-center text-pretty text-sm text-slate-600 dark:text-slate-300 sm:mb-8 sm:mt-4 sm:text-base md:text-lg">
           {fromUpworkVisitor ? (
             <>
               You arrived from Upwork — please keep all project discussion inside Upwork&apos;s Message Center for compliance and faster routing.
@@ -328,11 +328,11 @@ const Contact = () => {
                 transition={formTransition}
                 onSubmit={handleSubmit}
                 noValidate
-                className="relative overflow-hidden rounded-ds-2xl border border-slate-200/90 bg-slate-50/50 p-5 shadow-sm backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/50 sm:p-8"
+                className="relative overflow-hidden rounded-ds-2xl border border-slate-200/90 bg-slate-50/50 p-4 shadow-sm backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/50 sm:p-8"
               >
                 <div className="absolute -inset-px -z-10 rounded-ds-2xl bg-gradient-to-r from-indigo-500/10 to-emerald-500/8 opacity-50 blur-2xl dark:from-indigo-500/5 dark:to-emerald-500/5" />
 
-                <div className="space-y-5">
+                <div className="space-y-4 sm:space-y-5">
                   <FloatingField
                     id="contact-name"
                     name="name"
@@ -374,7 +374,7 @@ const Contact = () => {
                   disabled={isSubmitting || !isSupabaseConfigured}
                   whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
                   whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-                  className="mt-7 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-ds-full bg-indigo-600 px-8 py-3 font-semibold text-white shadow-md transition-all hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                  className="mt-5 inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-ds-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition-all hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60 sm:mt-7 sm:min-h-[48px] sm:w-auto sm:px-8 sm:py-3 sm:text-base"
                 >
                   <AnimatePresence mode="wait" initial={false}>
                     {isSubmitting ? (
@@ -411,9 +411,9 @@ const Contact = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-16 w-full max-w-2xl rounded-ds-2xl border border-slate-200/90 bg-slate-50/80 px-6 py-8 text-center backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/50"
+          className="mt-10 w-full max-w-2xl rounded-ds-2xl border border-slate-200/90 bg-slate-50/80 px-4 py-6 text-center backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/50 sm:mt-16 sm:px-6 sm:py-8"
         >
-          <p className="font-display text-lg font-bold text-slate-900 dark:text-slate-50 sm:text-xl">
+          <p className="font-display text-base font-bold text-slate-900 dark:text-slate-50 sm:text-lg md:text-xl">
             Ready to build the next big thing? Let&apos;s discuss your project ROI.
           </p>
         </motion.div>

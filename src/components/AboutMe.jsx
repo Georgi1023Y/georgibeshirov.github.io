@@ -30,11 +30,11 @@ const AboutMe = () => {
   return (
     <section
       id="about"
-      className="w-full min-w-0 max-w-full overflow-x-hidden border-t border-slate-200/80 bg-white py-16 px-gutter dark:border-slate-700/60 dark:bg-[#020617] sm:py-20 sm:px-gutter-sm lg:px-gutter-lg"
+      className="w-full min-w-0 max-w-full overflow-x-hidden border-t border-slate-200/80 bg-white px-4 py-12 dark:border-slate-700/60 dark:bg-[#020617] sm:px-gutter-sm sm:py-16 lg:px-gutter-lg lg:py-20"
     >
       <div
         ref={ref}
-        className="mx-auto flex min-w-0 w-full max-w-4xl flex-col items-center gap-10 md:flex-row md:items-start md:gap-16"
+        className="mx-auto flex min-w-0 w-full max-w-4xl flex-col items-center gap-6 md:flex-row md:items-start md:gap-16 lg:gap-16"
       >
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -55,10 +55,10 @@ const AboutMe = () => {
         </motion.div>
 
         <div className="min-w-0 flex-1 text-center md:text-left">
-          <h2 className="font-display text-2xl font-bold text-slate-900 dark:text-slate-50 sm:text-3xl">
+          <h2 className="font-display text-2xl font-bold leading-tight text-slate-900 dark:text-slate-50 md:text-3xl lg:text-4xl">
             Solution partner, not a ticket queue
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg">
+          <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300 md:mt-4 md:text-base lg:text-lg">
             I work as a <span className="font-semibold text-slate-900 dark:text-slate-50">high-end solution partner</span>{" "}
             for teams that need production-grade web apps,{" "}
             <span className="font-semibold text-slate-900 dark:text-slate-50">AI integrations</span>, and architecture

@@ -5,10 +5,10 @@ const Education = () => {
   return (
     <section
       id="education"
-      className="w-full min-w-0 max-w-full overflow-x-hidden border-t border-slate-200/80 bg-white py-16 px-gutter dark:border-slate-700/60 dark:bg-[#020617] sm:py-20 sm:px-gutter-sm lg:px-gutter-lg"
+      className="w-full min-w-0 max-w-full overflow-x-hidden border-t border-slate-200/80 bg-white px-4 py-12 dark:border-slate-700/60 dark:bg-[#020617] sm:px-gutter-sm sm:py-16 lg:px-gutter-lg lg:py-20"
     >
       <div className="mx-auto max-w-content">
-        <h2 className="mb-10 text-center font-display text-3xl font-bold text-slate-900 dark:text-slate-50 sm:mb-12 sm:text-4xl">
+        <h2 className="mb-6 text-center font-display text-2xl font-bold text-slate-900 dark:text-slate-50 sm:mb-8 md:mb-10 lg:mb-12 md:text-3xl lg:text-4xl">
           Education
         </h2>
 
@@ -23,7 +23,7 @@ const Education = () => {
               <GraduationCap className="h-5 w-5" />
             </span>
             <div>
-              <h3 className="font-display text-lg font-bold text-slate-900 dark:text-slate-50 sm:text-xl">
+              <h3 className="font-display text-base font-bold text-slate-900 dark:text-slate-50 sm:text-lg md:text-xl">
                 Currently pursuing a B.Sc. in Computer Science
               </h3>
               <p className="mt-3 flex items-start gap-2 text-slate-600 dark:text-slate-300">

@@ -145,18 +145,18 @@ const DevelopmentProcess = () => {
   return (
     <section
       id="process"
-      className="w-full min-w-0 max-w-full overflow-x-hidden border-t border-slate-200/80 bg-white py-16 px-gutter text-slate-900 dark:border-slate-700/60 dark:bg-[#020617] sm:py-20 sm:px-gutter-sm lg:px-gutter-lg"
+      className="w-full min-w-0 max-w-full overflow-x-hidden border-t border-slate-200/80 bg-white px-4 py-12 text-slate-900 dark:border-slate-700/60 dark:bg-[#020617] sm:px-gutter-sm sm:py-16 lg:px-gutter-lg lg:py-20"
     >
       <div className="max-w-content mx-auto min-w-0 w-full">
-        <h2 className="mb-10 text-center font-display text-3xl font-bold text-slate-900 dark:text-slate-50 sm:mb-12 sm:text-4xl">
+        <h2 className="mb-6 text-center font-display text-2xl font-bold text-slate-900 dark:text-slate-50 sm:mb-8 md:mb-10 lg:mb-12 md:text-3xl lg:text-4xl">
           Development workflow &amp; methodology
         </h2>
 
         <DarkMethodologyFlow />
 
-        <div className="space-y-16">
+        <div className="space-y-10 sm:space-y-14 md:space-y-16">
           <div>
-            <h3 className="mb-6 text-center font-display text-2xl font-bold text-indigo-600 sm:text-left dark:text-indigo-400">
+            <h3 className="mb-4 text-center font-display text-xl font-bold text-indigo-600 sm:mb-6 sm:text-left md:text-2xl dark:text-indigo-400">
               Delivery process
             </h3>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
@@ -184,7 +184,7 @@ const DevelopmentProcess = () => {
           </div>
 
           <div>
-            <h3 className="mb-6 text-center font-display text-2xl font-bold text-emerald-800 md:text-left dark:text-emerald-400/90">
+            <h3 className="mb-4 text-center font-display text-xl font-bold text-emerald-800 sm:mb-6 md:text-left md:text-2xl dark:text-emerald-400/90">
               Problem-solving methodology
             </h3>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">

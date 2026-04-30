@@ -1,7 +1,7 @@
 import { Suspense, useLayoutEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { PerspectiveCamera } from "@react-three/drei";
-import * as THREE from "three";
+import { DynamicDrawUsage, MathUtils } from "three";
 
 /** Fixed topology: never change count or buffer lengths after mount (avoids R3F buffer size mismatch). */
 const PARTICLE_COUNT = 480;
@@ -43,6 +43,47 @@ function buildNetworkEdgePairs(positions, count, maxDistance) {
   return pairs;
 }
 
+/** Canvas pixel width → uniform scale on points + lineSegments (mobile / tablet / desktop). */
+function meshScaleForWidth(pxWidth) {
+  if (pxWidth < 640) return 0.95;
+  if (pxWidth < 768) return 1;
+  if (pxWidth < 1024) return 1;
+  return 1.1;
+}
+
+function meshYOffsetForWidth(pxWidth) {
+  if (pxWidth < 640) return -0.14;
+  if (pxWidth < 768) return -0.1;
+  if (pxWidth < 1024) return 0.02;
+  return 0.08;
+}
+
+/** Matches mesh scale so framing stays balanced (wider FOV / z when cluster reads sparse). */
+function ResponsiveHeroCamera() {
+  const camera = useThree((s) => s.camera);
+  const width = useThree((s) => s.size.width);
+
+  useLayoutEffect(() => {
+    if (!camera?.isPerspectiveCamera) return;
+    if (width < 768) {
+      camera.fov = 46;
+      camera.position.z = 5.05;
+      camera.position.y = 0.12;
+    } else if (width < 1024) {
+      camera.fov = 43;
+      camera.position.z = 4.72;
+      camera.position.y = 0.1;
+    } else {
+      camera.fov = 39;
+      camera.position.z = 5.08;
+      camera.position.y = 0.09;
+    }
+    camera.updateProjectionMatrix();
+  }, [camera, width]);
+
+  return null;
+}
+
 /**
  * Stops R3F from using touchAction:none on the canvas (which can fight scroll on some browsers).
  */
@@ -78,9 +119,17 @@ function NeuralScene({ pointerRef, lowPower, isDark }) {
   const t = useRef(0);
   const frameHalted = useRef(false);
   const loggedFrameError = useRef(false);
+  const viewportWidth = useThree((s) => s.size.width);
+  const meshScale = useMemo(() => meshScaleForWidth(viewportWidth), [viewportWidth]);
+  const meshY = useMemo(() => meshYOffsetForWidth(viewportWidth), [viewportWidth]);
 
   const particleCount = PARTICLE_COUNT;
-  const particleSize = lowPower ? 0.022 : 0.018;
+  const particleSize = useMemo(() => {
+    const base = lowPower ? 0.022 : 0.018;
+    if (viewportWidth < 768) return base * 1.06;
+    if (viewportWidth < 1024) return base;
+    return base * 0.88;
+  }, [lowPower, viewportWidth]);
 
   const { basePositions, edgePairs, lineVertexCount } = useMemo(() => {
     const count = PARTICLE_COUNT;
@@ -133,16 +182,16 @@ function NeuralScene({ pointerRef, lowPower, isDark }) {
       }
       t.current += delta;
       const p = pointerRef.current;
-      smooth.current.x = THREE.MathUtils.lerp(smooth.current.x, p.x, 0.06);
-      smooth.current.y = THREE.MathUtils.lerp(smooth.current.y, p.y, 0.06);
+      smooth.current.x = MathUtils.lerp(smooth.current.x, p.x, 0.06);
+      smooth.current.y = MathUtils.lerp(smooth.current.y, p.y, 0.06);
 
       if (root.current) {
-        root.current.rotation.y = THREE.MathUtils.lerp(
+        root.current.rotation.y = MathUtils.lerp(
           root.current.rotation.y,
           smooth.current.x * 0.28,
           0.04
         );
-        root.current.rotation.x = THREE.MathUtils.lerp(
+        root.current.rotation.x = MathUtils.lerp(
           root.current.rotation.x,
           -smooth.current.y * 0.2,
           0.04
@@ -197,7 +246,7 @@ function NeuralScene({ pointerRef, lowPower, isDark }) {
   const linesKey = `line-segments-${particleCount}`;
 
   return (
-    <group ref={root} position={[0, 0.08, 0]}>
+    <group ref={root} position={[0, meshY, 0]} scale={meshScale}>
       <points key={pointsKey} ref={pointsRef} rotation={[0.1, 0, 0]}>
         <bufferGeometry>
           <bufferAttribute
@@ -205,7 +254,7 @@ function NeuralScene({ pointerRef, lowPower, isDark }) {
             count={particleCount}
             array={pointsAnimated}
             itemSize={3}
-            usage={THREE.DynamicDrawUsage}
+            usage={DynamicDrawUsage}
           />
         </bufferGeometry>
         <pointsMaterial
@@ -225,7 +274,7 @@ function NeuralScene({ pointerRef, lowPower, isDark }) {
               count={lineVertexCountForAttr}
               array={linePositions}
               itemSize={3}
-              usage={THREE.DynamicDrawUsage}
+              usage={DynamicDrawUsage}
             />
           </bufferGeometry>
           <lineBasicMaterial
@@ -281,6 +330,7 @@ export default function NeuralParticleMesh({ pointerRef, lowPower, isDark }) {
         }}
       >
         <PerspectiveCamera makeDefault position={[0, 0.1, 4.4]} fov={42} near={0.1} far={24} />
+        <ResponsiveHeroCamera />
         <CanvasScrollSafe />
         <ambientLight intensity={isDark ? 0.75 : 1.05} />
         <Suspense fallback={null}>

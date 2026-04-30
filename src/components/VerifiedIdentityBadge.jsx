@@ -31,12 +31,12 @@ export function VerifiedIdentityBadge({ className = "" }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-      className={`inline-flex max-w-full items-center gap-2.5 rounded-ds-full border border-sky-500/35 bg-gradient-to-r from-sky-500/[0.12] to-blue-600/[0.08] px-4 py-2 shadow-sm backdrop-blur-md dark:border-sky-400/30 dark:from-sky-400/[0.14] dark:to-blue-500/[0.08] ${className}`.trim()}
+      className={`inline-flex max-w-full items-center justify-center gap-2 rounded-ds-full border border-sky-500/35 bg-gradient-to-r from-sky-500/[0.12] to-blue-600/[0.08] px-3 py-1.5 shadow-sm backdrop-blur-md dark:border-sky-400/30 dark:from-sky-400/[0.14] dark:to-blue-500/[0.08] sm:gap-2.5 sm:px-4 sm:py-2 ${className}`.trim()}
       role="status"
       aria-label="EU-based professional with identity verified via government ID"
     >
-      <BlueVerifiedIcon className="h-[1.15rem] w-[1.15rem]" />
-      <span className="text-left text-[13px] font-semibold leading-snug tracking-tight text-sky-950 dark:text-sky-100 sm:text-sm">
+      <BlueVerifiedIcon className="h-4 w-4 md:h-5 md:w-5" />
+      <span className="max-w-[240px] text-center text-xs font-semibold leading-snug tracking-tight text-sky-950 dark:text-sky-100 xs:max-w-none sm:text-sm">
         EU-Based &amp; Identity Verified (Government ID Checked)
       </span>
     </motion.div>

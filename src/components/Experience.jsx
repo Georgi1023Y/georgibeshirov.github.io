@@ -28,9 +28,9 @@ const Experience = () => {
   return (
     <section
       id="experience"
-      className="flex w-full min-w-0 max-w-full flex-col items-center overflow-x-hidden border-t border-slate-200/80 bg-white py-16 px-gutter dark:border-slate-700/60 dark:bg-[#020617] sm:px-gutter-sm sm:py-20 lg:px-gutter-lg"
+      className="flex w-full min-w-0 max-w-full flex-col items-center overflow-x-hidden border-t border-slate-200/80 bg-white px-4 py-12 dark:border-slate-700/60 dark:bg-[#020617] sm:px-gutter-sm sm:py-16 lg:px-gutter-lg lg:py-20"
     >
-      <h2 className="mb-12 text-center font-display text-3xl font-bold text-slate-900 dark:text-slate-50 sm:mb-14 sm:text-4xl">
+      <h2 className="mb-8 text-center font-display text-2xl font-bold text-slate-900 dark:text-slate-50 sm:mb-10 md:mb-12 lg:mb-14 md:text-3xl lg:text-4xl">
         Experience
       </h2>
       <div className="relative w-full min-w-0 max-w-3xl">
@@ -57,7 +57,7 @@ const Experience = () => {
                 }`}
               >
                 <div className="mb-2 flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-                  <h3 className="font-display text-lg font-bold text-slate-900 dark:text-slate-50 sm:text-xl">
+                  <h3 className="font-display text-base font-bold text-slate-900 dark:text-slate-50 sm:text-lg md:text-xl">
                     {exp.title}
                   </h3>
                 </div>

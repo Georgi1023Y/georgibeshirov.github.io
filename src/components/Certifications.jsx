@@ -45,18 +45,18 @@ const Certifications = () => {
   return (
     <section
       id="certifications"
-      className="w-full min-w-0 max-w-full overflow-x-hidden border-y border-slate-200/80 bg-white py-16 px-gutter dark:border-slate-700/60 dark:bg-[#020617] sm:py-20 sm:px-gutter-sm lg:px-gutter-lg"
+      className="w-full min-w-0 max-w-full overflow-x-hidden border-y border-slate-200/80 bg-white px-4 py-12 dark:border-slate-700/60 dark:bg-[#020617] sm:px-gutter-sm sm:py-16 lg:px-gutter-lg lg:py-20"
     >
       <div className="mx-auto max-w-content">
-        <div className="mb-12 flex flex-col items-center text-center sm:mb-14">
+        <div className="mb-8 flex flex-col items-center text-center sm:mb-10 md:mb-12 lg:mb-14">
           <span className="mb-3 inline-flex items-center gap-2 rounded-ds-full border border-indigo-200/80 bg-indigo-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-950/40 dark:text-indigo-300">
             <Award className="h-3.5 w-3.5" />
             Trust & depth
           </span>
-          <h2 className="font-display text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl">
+          <h2 className="font-display text-2xl font-bold text-slate-900 dark:text-slate-50 md:text-3xl lg:text-4xl">
             Certifications
           </h2>
-          <p className="mt-3 max-w-2xl text-sm text-slate-600 dark:text-slate-400 sm:text-base">
+          <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-400 md:mt-3 md:text-base">
             Continuous learning that maps directly to client outcomes: AI deployment, scalable
             systems, and expert-level delivery.
           </p>
@@ -82,7 +82,7 @@ const Certifications = () => {
                     <Icon className="h-5 w-5" />
                   </span>
                   <div>
-                    <h3 className="font-display text-lg font-bold text-slate-900 dark:text-slate-50">
+                    <h3 className="font-display text-base font-bold text-slate-900 dark:text-slate-50 sm:text-lg">
                       {item.name}
                     </h3>
                     <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">

@@ -104,7 +104,7 @@ function TechStackCard({ category }) {
           ))}
         </div>
 
-        <h3 className="text-center font-display text-lg font-bold text-slate-900 sm:text-left sm:text-xl dark:text-slate-50">
+        <h3 className="text-center font-display text-base font-bold text-slate-900 sm:text-left sm:text-lg md:text-xl dark:text-slate-50">
           {category.title}
         </h3>
         <p className="mt-2 text-center text-sm text-slate-600 sm:text-left dark:text-slate-400">
@@ -140,20 +140,20 @@ const Skills = () => {
   return (
     <section
       id="tech-stack"
-      className="flex w-full min-w-0 max-w-full flex-col items-center overflow-x-hidden border-t border-slate-200/80 bg-slate-50/40 py-16 px-gutter text-slate-900 dark:border-slate-700/60 dark:bg-slate-900/20 sm:py-20 sm:px-gutter-sm lg:px-gutter-lg"
+      className="flex w-full min-w-0 max-w-full flex-col items-center overflow-x-hidden border-t border-slate-200/80 bg-slate-50/40 px-4 py-12 text-slate-900 dark:border-slate-700/60 dark:bg-slate-900/20 sm:px-gutter-sm sm:py-16 lg:px-gutter-lg lg:py-20"
     >
       <div className="w-full max-w-content">
-        <div className="mb-10 flex w-full flex-col items-center sm:mb-12">
+        <div className="mb-6 flex w-full flex-col items-center sm:mb-8 md:mb-10 lg:mb-12">
           <div className="mb-4 flex w-full justify-center">
             <span className="inline-flex items-center gap-2 rounded-ds-full border border-emerald-200/80 bg-emerald-50/90 px-3.5 py-1.5 text-center text-xs font-semibold uppercase tracking-[0.08em] text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300/90">
               <Sparkles className="h-3.5 w-3.5 shrink-0" />
               <span>Verified Upwork Rising Talent &amp; 5-Star Rated</span>
             </span>
           </div>
-          <h2 className="font-display text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl">
+          <h2 className="font-display text-2xl font-bold text-slate-900 dark:text-slate-50 md:text-3xl lg:text-4xl">
             Tech Stack
           </h2>
-          <p className="mt-3 max-w-2xl text-center text-sm text-slate-600 dark:text-slate-400 sm:text-base">
+          <p className="mt-2 max-w-2xl text-center text-sm text-slate-600 dark:text-slate-400 md:mt-3 md:text-base lg:text-lg">
             Skills and technologies aligned with my Upwork profile—mapped clearly from AI
             and mobile to full-stack web delivery.
           </p>
@@ -164,7 +164,7 @@ const Skills = () => {
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-7"
+          className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-7"
         >
           {categories.map((category) => (
             <TechStackCard key={category.title} category={category} />

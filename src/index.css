@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @layer base {
+  /* Explicit canvas color + color-scheme so mobile UIs don’t auto-dim “light” pages to gray. */
   html {
     @apply min-h-dvh font-sans antialiased;
     scroll-behavior: auto;
@@ -10,22 +11,30 @@
     scroll-padding-top: calc(5rem + env(safe-area-inset-top, 0px));
     overflow-x: hidden;
     overflow-anchor: none;
+    color-scheme: light;
+    background-color: #ffffff;
   }
 
-  html,
-  body,
-  #root {
-    @apply min-h-dvh bg-white text-slate-900 dark:bg-[#020617] dark:text-slate-50;
+  html.dark {
+    color-scheme: dark;
+    background-color: #020617;
   }
 
   body,
   #root {
+    @apply min-h-dvh text-slate-900 dark:text-slate-50;
+    background-color: #ffffff;
     min-width: 0;
     max-width: 100%;
     min-height: 0;
     overflow-x: hidden;
     scroll-snap-type: none;
     overflow-anchor: none;
+  }
+
+  html.dark body,
+  html.dark #root {
+    background-color: #020617;
   }
 
   section[id] {

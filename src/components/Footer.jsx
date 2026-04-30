@@ -6,7 +6,7 @@ import { LetsTalkUpworkLink } from "./LetsTalkUpworkLink";
 
 const Footer = () => {
   return (
-    <footer className="flex w-full min-w-0 max-w-full flex-col items-center justify-center overflow-x-hidden border-t border-slate-200/80 bg-slate-50/60 py-12 pb-[max(2.5rem,env(safe-area-inset-bottom,0px))] text-center text-slate-500 dark:border-slate-700/60 dark:bg-slate-900/30">
+    <footer className="flex w-full min-w-0 max-w-full flex-col items-center justify-center overflow-x-hidden border-t border-slate-200/80 bg-slate-50/60 py-10 pb-[max(2rem,env(safe-area-inset-bottom,0px))] text-center text-slate-500 dark:border-slate-700/60 dark:bg-slate-900/30 sm:py-12 sm:pb-[max(2.5rem,env(safe-area-inset-bottom,0px))]">
       <motion.p
         initial={{ opacity: 0, y: 8 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -27,11 +27,11 @@ const Footer = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
-        className="mb-8 flex w-full justify-center px-4"
+        className="mb-6 flex w-full justify-center gap-2 px-4 sm:mb-8"
       >
-        <LetsTalkUpworkLink className="min-h-[48px] px-8 py-3 text-sm shadow-lg shadow-[#14a800]/20" />
+        <LetsTalkUpworkLink className="shadow-lg shadow-[#14a800]/20" />
       </motion.div>
-      <div className="mb-4 flex gap-6">
+      <div className="mb-4 flex gap-4 md:gap-6">
         <a
           href="https://github.com/Georgi1023Y"
           target="_blank"

@@ -23,7 +23,7 @@ const HeroParticleLayer = memo(function HeroParticleLayer({
 }) {
   return (
     <div
-      className="pointer-events-none absolute inset-0 z-0 min-h-0 w-full touch-pan-y overflow-hidden"
+      className="pointer-events-none absolute left-0 right-0 top-0 z-0 h-[80vh] min-h-[80vh] max-h-[680px] w-full touch-pan-y overflow-hidden md:inset-0 md:h-full md:min-h-0 md:max-h-none"
       aria-hidden
     >
       {reducedMotion || !enable3D ? (
@@ -173,7 +173,7 @@ const Hero = () => {
 
   return (
     <section
-      className="relative z-10 flex min-h-[100svh] min-w-0 max-w-full flex-col items-center justify-center overflow-hidden bg-transparent px-gutter pb-12 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] text-center text-slate-900 dark:text-slate-50 sm:px-gutter-sm lg:px-gutter-lg"
+      className="relative z-10 flex min-h-[84svh] min-w-0 max-w-full flex-col items-center justify-center overflow-x-hidden overflow-y-visible bg-transparent px-6 pb-12 pt-[calc(7.5rem+env(safe-area-inset-top,0px))] text-center text-slate-900 dark:text-slate-50 min-[425px]:min-h-[90svh] min-[425px]:pb-16 sm:min-h-[100svh] sm:px-gutter-sm sm:pb-12 sm:pt-[calc(5.5rem+env(safe-area-inset-top,0px))] lg:px-gutter-lg"
       id="top"
     >
       {/* Three.js lives only inside this section — it scrolls away; lower sections have no WebGL behind them */}
@@ -187,21 +187,21 @@ const Hero = () => {
       />
 
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-28 bg-gradient-to-b from-transparent to-white dark:to-[#020617] sm:h-36"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-24 bg-gradient-to-b from-transparent to-white dark:to-[#020617] sm:h-36"
         aria-hidden
       />
 
-      <div className="relative z-10 flex w-full min-w-0 max-w-4xl flex-col items-center">
+      <div className="relative z-10 flex w-full min-w-0 max-w-4xl flex-col items-center px-6 pb-10 min-[425px]:pb-32 sm:px-0 sm:pb-0">
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease }}
-            className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400"
+            className="mb-2 max-w-[min(100%,380px)] text-[10px] font-semibold uppercase leading-snug tracking-[0.18em] text-indigo-600 dark:text-indigo-400 xs:text-xs xs:tracking-[0.2em] sm:mb-3 md:mb-4"
           >
             Georgi Beshirov
           </motion.p>
 
-          <div className="mb-5 flex w-full justify-center px-2">
+          <div className="relative z-20 mb-2 flex w-full justify-center px-2 sm:mb-3 md:mb-5">
             <VerifiedIdentityBadge />
           </div>
 
@@ -209,7 +209,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.05, ease }}
-            className="mb-4 max-w-full px-1 font-display text-balance break-words text-3xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-slate-50 sm:text-4xl md:text-5xl lg:text-[2.75rem]"
+            className="mb-1.5 max-w-full px-0.5 font-display text-balance break-words text-2xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-slate-50 xs:text-3xl sm:mb-3 sm:px-1 md:mb-4 md:text-4xl lg:text-5xl xl:text-[2.75rem]"
           >
             AI Integrations | Full Stack Developer &amp; Web Apps
           </motion.h1>
@@ -218,7 +218,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.1, ease }}
-            className="mx-auto mb-4 flex max-w-lg items-center justify-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300"
+            className="mx-auto mb-1.5 flex max-w-lg items-center justify-center gap-2 px-1 text-sm font-medium text-slate-600 dark:text-slate-300 sm:mb-3 md:mb-4 md:text-base"
           >
             <GraduationCap
               className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400"
@@ -231,7 +231,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.12, ease }}
-            className="mb-8 max-w-2xl text-pretty text-base leading-relaxed text-slate-600 dark:text-slate-400 sm:text-lg"
+            className="mb-4 max-w-2xl px-0.5 text-pretty text-sm leading-relaxed text-slate-600 dark:text-slate-400 sm:mb-6 md:mb-8 md:text-base lg:text-lg"
           >
             Helping businesses automate complexity and scale through custom AI-driven web
             ecosystems — with a clear focus on{" "}
@@ -243,7 +243,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.2, ease }}
-            className="mb-10 mx-auto flex w-full max-w-2xl flex-col items-center justify-center gap-2 rounded-ds-2xl border border-slate-200/80 bg-slate-50/50 px-4 py-3 text-center shadow-sm backdrop-blur-md dark:border-slate-700/60 dark:bg-slate-900/50 sm:flex-row sm:items-stretch sm:gap-0 sm:divide-x sm:divide-slate-200/80 dark:sm:divide-slate-700/60 sm:px-2"
+            className="mt-16 mb-6 mx-auto flex w-full max-w-2xl flex-col items-center justify-center gap-1.5 rounded-ds-2xl border border-slate-200/80 bg-slate-50/50 px-3 py-2.5 text-center shadow-sm backdrop-blur-md dark:border-slate-700/60 dark:bg-slate-900/50 sm:mt-0 sm:mb-8 md:mb-10 sm:flex-row sm:items-stretch sm:gap-0 sm:divide-x sm:divide-slate-200/80 dark:sm:divide-slate-700/60 sm:px-2 sm:py-3"
             role="group"
             aria-label="Upwork trust indicators"
           >
@@ -271,27 +271,27 @@ const Hero = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.28, ease }}
-            className="mb-10 flex w-full max-w-2xl flex-col items-center gap-3 sm:flex-row sm:justify-center"
+            className="mb-6 flex w-full max-w-2xl flex-col items-center gap-2 sm:mb-8 md:mb-10 sm:flex-row sm:justify-center sm:gap-4"
           >
-            <LetsTalkUpworkLink className="w-full min-h-[48px] px-8 py-3 text-sm sm:w-auto" />
+            <LetsTalkUpworkLink className="w-auto max-w-full" />
           </motion.div>
 
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.4 }}
-            className="mb-6 text-sm text-slate-500 dark:text-slate-400"
+            className="mb-5 max-w-[min(100%,340px)] px-1 text-xs leading-snug text-slate-500 dark:text-slate-400 sm:max-w-none sm:text-sm"
           >
             High-end solution partner for AI integrations, full-stack delivery, and production
             systems.
           </motion.p>
 
-          <div className="flex justify-center gap-8">
+          <div className="flex justify-center gap-2 sm:gap-8">
             <a
               href="https://github.com/Georgi1023Y"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-2xl text-slate-400 transition-colors hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400"
+              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-2xl text-slate-400 transition-colors hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400"
               aria-label="GitHub"
             >
               <FaGithub />
@@ -300,7 +300,7 @@ const Hero = () => {
               href="https://www.instagram.com/georgiyuliqnov/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-2xl text-slate-400 transition-colors hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400"
+              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-2xl text-slate-400 transition-colors hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400"
               aria-label="Instagram"
             >
               <FaInstagram />
