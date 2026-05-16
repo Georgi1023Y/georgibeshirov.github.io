@@ -2,10 +2,9 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
-// GitHub Project Pages serves this repo at https://<user>.github.io/georgibeshirov.github.io/
-// so asset URLs must be rooted under this path (fixes /assets/*.js 404 on Pages).
+// Custom domain (georgibeshirov.com) — assets and routes are served from site root.
 export default defineConfig({
-  base: "/georgibeshirov.github.io/",
+  base: "/",
   plugins: [react()],
   build: {
     target: "es2022",
