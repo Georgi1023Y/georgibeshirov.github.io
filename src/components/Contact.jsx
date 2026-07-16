@@ -91,7 +91,7 @@ function FloatingField({
   );
 }
 
-function SuccessOverlay({ onReset }) {
+function SuccessOverlay({ onReset, variant = "saved" }) {
   const confetti = useMemo(
     () =>
       Array.from({ length: 14 }, (_, i) => ({
@@ -102,6 +102,8 @@ function SuccessOverlay({ onReset }) {
       })),
     []
   );
+
+  const isFallback = variant === "fallback";
 
   return (
     <motion.div
@@ -144,7 +146,20 @@ function SuccessOverlay({ onReset }) {
         Thank you — I&apos;ll get back to you soon.
       </h3>
       <p className="mt-2 text-xs text-slate-600 dark:text-slate-300 sm:text-sm md:text-base">
-        Your message was saved securely. I typically reply within one business day.
+        {isFallback ? (
+          <>
+            Prefer email? Reach me directly at{" "}
+            <a
+              href="mailto:beshirovgeorgi3@gmail.com"
+              className="font-medium text-indigo-600 underline underline-offset-2 dark:text-indigo-400"
+            >
+              beshirovgeorgi3@gmail.com
+            </a>
+            . I typically reply within one business day.
+          </>
+        ) : (
+          <>Your message was saved securely. I typically reply within one business day.</>
+        )}
       </p>
 
       <motion.button
@@ -160,17 +175,31 @@ function SuccessOverlay({ onReset }) {
   );
 }
 
+const USER_SEND_ERROR =
+  "Something went wrong. Please email beshirovgeorgi3@gmail.com directly.";
+
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [fieldErrors, setFieldErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
+  const [successVariant, setSuccessVariant] = useState("saved");
   const [fromUpworkVisitor, setFromUpworkVisitor] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setFromUpworkVisitor(params.get("from") === "upwork");
   }, []);
+
+  const finishSuccessfully = (variant = "saved") => {
+    setSuccessVariant(variant);
+    setSent(true);
+    setFieldErrors({});
+    setForm({ name: "", email: "", message: "" });
+    toast.success("Thank you for your message.", {
+      icon: <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-500" strokeWidth={2.25} />,
+    });
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -207,38 +236,40 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
-    if (!isSupabaseConfigured) {
-      toast.error("Contact form: add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, then restart the dev server.", {
-        icon: <AlertTriangle className="h-5 w-5 shrink-0 text-rose-500" strokeWidth={2.25} />,
-      });
-      return;
-    }
     if (!validate()) return;
 
-    setIsSubmitting(true);
-    const { data, error, fnError } = await submitContactForm({
-      full_name: form.name.trim(),
-      email: form.email.trim(),
-      content: form.message.trim(),
-    });
-    setIsSubmitting(false);
-
-    if (error || !data?.success) {
-      console.error("[Contact] Supabase error object:", error ?? fnError);
-      const msg = fnError || (error && "message" in error ? error.message : null) || "Could not send your message. Please try again.";
-      toast.error(msg, {
-        icon: <AlertTriangle className="h-5 w-5 shrink-0 text-rose-500" strokeWidth={2.25} />,
-      });
+    // Backend missing: never show config errors — thank the user and point to email.
+    if (!isSupabaseConfigured) {
+      finishSuccessfully("fallback");
       return;
     }
 
-    console.log("[Contact] Message saved (Supabase row):", data);
-    toast.success("Message sent successfully.", {
-      icon: <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-500" strokeWidth={2.25} />,
-    });
-    setSent(true);
-    setFieldErrors({});
-    setForm({ name: "", email: "", message: "" });
+    setIsSubmitting(true);
+    try {
+      const { data, error } = await submitContactForm({
+        full_name: form.name.trim(),
+        email: form.email.trim(),
+        content: form.message.trim(),
+      });
+
+      if (error || !data?.success) {
+        if (import.meta.env.DEV) {
+          console.error("[Contact] submit failed:", error);
+        }
+        toast.error(USER_SEND_ERROR, {
+          icon: <AlertTriangle className="h-5 w-5 shrink-0 text-rose-500" strokeWidth={2.25} />,
+        });
+        return;
+      }
+
+      finishSuccessfully("saved");
+    } catch {
+      toast.error(USER_SEND_ERROR, {
+        icon: <AlertTriangle className="h-5 w-5 shrink-0 text-rose-500" strokeWidth={2.25} />,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -280,15 +311,6 @@ const Contact = () => {
           )}
         </p>
 
-        {!fromUpworkVisitor && !isSupabaseConfigured && (
-          <p className="mb-6 max-w-xl text-center text-sm text-amber-800 dark:text-amber-200/90">
-            Backend not configured. Set <code className="rounded bg-amber-100/80 px-1 py-0.5 text-[0.8em] dark:bg-amber-950/50">VITE_SUPABASE_URL</code> and{" "}
-            <code className="rounded bg-amber-100/80 px-1 py-0.5 text-[0.8em] dark:bg-amber-950/50">VITE_SUPABASE_ANON_KEY</code> in{" "}
-            <code className="rounded bg-amber-100/80 px-1 py-0.5 text-[0.8em] dark:bg-amber-950/50">.env</code> and restart Vite. Ensure RLS allows anon{" "}
-            <code className="rounded bg-amber-100/80 px-1 py-0.5 text-[0.8em] dark:bg-amber-950/50">INSERT</code> on <code className="rounded bg-amber-100/80 px-1 py-0.5 text-[0.8em] dark:bg-amber-950/50">messages</code>.
-          </p>
-        )}
-
         <div className="relative w-full max-w-xl min-w-0">
           {fromUpworkVisitor ? (
             <motion.div
@@ -315,8 +337,10 @@ const Contact = () => {
           <AnimatePresence mode="wait" initial={false}>
             {sent ? (
               <SuccessOverlay
+                variant={successVariant}
                 onReset={() => {
                   setSent(false);
+                  setSuccessVariant("saved");
                 }}
               />
             ) : (
@@ -371,7 +395,7 @@ const Contact = () => {
 
                 <motion.button
                   type="submit"
-                  disabled={isSubmitting || !isSupabaseConfigured}
+                  disabled={isSubmitting}
                   whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
                   whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
                   className="mt-5 inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-ds-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition-all hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60 sm:mt-7 sm:min-h-[48px] sm:w-auto sm:px-8 sm:py-3 sm:text-base"

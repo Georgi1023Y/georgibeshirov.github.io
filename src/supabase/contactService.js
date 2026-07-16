@@ -24,6 +24,7 @@ function logCredentialDebug(context, extra) {
 /**
  * Inserts a contact form row (anon INSERT via RLS on public.messages).
  * Uses `.insert()` only (no `.select()`) so RLS does not require SELECT on the row.
+ * Never returns developer-facing config/connection strings for UI display.
  * @param {{ full_name: string; email: string; content: string }} payload
  * @returns {Promise<{ data: { success: true } | null, error: import("@supabase/supabase-js").PostgrestError | Error | null, fnError: string | null }>}
  */
@@ -45,8 +46,8 @@ export async function submitContactForm(payload) {
     }
     return {
       data: null,
-      error: new Error("Supabase is not configured"),
-      fnError: "not_configured",
+      error: new Error("not_configured"),
+      fnError: null,
     };
   }
 
@@ -57,8 +58,8 @@ export async function submitContactForm(payload) {
     }
     return {
       data: null,
-      error: new Error("Client unavailable"),
-      fnError: "not_configured",
+      error: new Error("not_configured"),
+      fnError: null,
     };
   }
 
@@ -81,32 +82,31 @@ export async function submitContactForm(payload) {
     const { error } = await supabase.from("messages").insert(insertPayload);
 
     if (error) {
-      console.error("[Contact flow] insert: failed (PostgREST returned error object)", error);
-      console.table([
-        {
-          code: error.code,
-          message: error.message,
-          details: error.details ?? "—",
-          hint: error.hint ?? "—",
-        },
-      ]);
-      const status = "status" in error ? error.status : undefined;
       if (import.meta.env.DEV) {
+        console.error("[Contact flow] insert: failed (PostgREST returned error object)", error);
+        console.table([
+          {
+            code: error.code,
+            message: error.message,
+            details: error.details ?? "—",
+            hint: error.hint ?? "—",
+          },
+        ]);
         console.log("[Contact flow] insert: PostgREST error raw keys", Object.keys(error));
+        const status = "status" in error ? error.status : undefined;
         if (status !== undefined) {
           console.log("[Contact flow] insert: HTTP status on error object:", status);
         }
-      }
-      if (import.meta.env.DEV) {
         logCredentialDebug("credential snapshot after PostgREST insert error");
+        if (status === 401 || looksLike401AuthIssue(error.message)) {
+          logCredentialDebug("401-like PostgREST error — check URL + anon key for THIS project", {
+            hint: "Dashboard → Settings → API: use anon public JWT (eyJ…) if publishable key fails.",
+          });
+        }
+        console.error("[Contact flow] messages.insert result", { ok: false, error });
       }
-      if (status === 401 || looksLike401AuthIssue(error.message)) {
-        logCredentialDebug("401-like PostgREST error — check URL + anon key for THIS project", {
-          hint: "Dashboard → Settings → API: use anon public JWT (eyJ…) if publishable key fails.",
-        });
-      }
-      console.error("[Contact flow] messages.insert result", { ok: false, error });
-      return { data: null, error, fnError: error.message };
+      // Do not expose PostgREST / config messages to callers for UI.
+      return { data: null, error, fnError: null };
     }
 
     const successPayload = { success: true };
@@ -117,12 +117,6 @@ export async function submitContactForm(payload) {
         columnsSent: Object.keys(insertPayload),
         insertPayload,
       });
-    } else {
-      console.info("[Contact flow] messages.insert OK", {
-        ok: true,
-        columns: ["full_name", "email", "content"],
-        contentLength: insertPayload.content.length,
-      });
     }
     return {
       data: successPayload,
@@ -130,29 +124,29 @@ export async function submitContactForm(payload) {
       fnError: null,
     };
   } catch (err) {
-    console.error("[Contact flow] insert: thrown (e.g. network/TypeError)", err);
     if (import.meta.env.DEV) {
+      console.error("[Contact flow] insert: thrown (e.g. network/TypeError)", err);
       logCredentialDebug("credential snapshot after thrown insert error");
+      const msg = err instanceof Error ? err.message : String(err);
+      if (looksLike401AuthIssue(msg)) {
+        logCredentialDebug("401-like thrown error (often fetch / gateway)", { message: msg });
+      }
+      if (err && typeof err === "object" && "code" in err) {
+        console.table({
+          code: err.code,
+          message: err.message,
+          details: err.details,
+          hint: err.hint,
+        });
+      } else {
+        console.table([{ name: err?.name, message: err?.message, cause: String(err?.cause ?? "") }]);
+      }
     }
-    const msg = err instanceof Error ? err.message : String(err);
-    if (looksLike401AuthIssue(msg)) {
-      logCredentialDebug("401-like thrown error (often fetch / gateway)", { message: msg });
-    }
-    if (err && typeof err === "object" && "code" in err) {
-      console.table({
-        code: err.code,
-        message: err.message,
-        details: err.details,
-        hint: err.hint,
-      });
-    } else {
-      console.table([{ name: err?.name, message: err?.message, cause: String(err?.cause ?? "") }]);
-    }
-    const e = err instanceof Error ? err : new Error(String(err));
+    const e = err instanceof Error ? err : new Error("submit_failed");
     return {
       data: null,
       error: e,
-      fnError: e.message || "Unknown error",
+      fnError: null,
     };
   }
 }
