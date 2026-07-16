@@ -19,23 +19,27 @@ function PortfolioToasterInner() {
   const toastOptions = useMemo(
     () => ({
       duration: 4500,
-      className: "font-sans !text-sm !font-medium",
+      className: "font-sans !text-sm !font-medium !leading-snug",
       style: {
         background: isDark ? "rgb(15 23 42)" : "rgb(255 255 255)",
         color: isDark ? "rgb(241 245 249)" : "rgb(15 23 42)",
         border: `1px solid ${isDark ? "rgb(51 65 85 / 0.9)" : "rgb(226 232 240)"}`,
+        borderRadius: "1rem",
+        padding: "0.875rem 1rem",
         boxShadow: isDark
           ? "0 18px 50px -12px rgba(0,0,0,0.45)"
           : "0 18px 50px -12px rgba(15,23,42,0.12)",
-        maxWidth: "min(100vw - 2rem, 24rem)",
+        maxWidth: "min(100vw - 2rem, 28rem)",
       },
       success: {
+        duration: 5000,
         iconTheme: {
           primary: "#10b981",
           secondary: isDark ? "#0f172a" : "#ffffff",
         },
       },
       error: {
+        duration: 6000,
         iconTheme: {
           primary: "#f43f5e",
           secondary: isDark ? "#0f172a" : "#ffffff",

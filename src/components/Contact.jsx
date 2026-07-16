@@ -175,8 +175,34 @@ function SuccessOverlay({ onReset, variant = "saved" }) {
   );
 }
 
-const USER_SEND_ERROR =
-  "Something went wrong. Please email beshirovgeorgi3@gmail.com directly.";
+const TOAST_SUCCESS =
+  "Message sent! Thank you for reaching out — Georgi will get back to you soon.";
+const TOAST_FALLBACK =
+  "Thank you! Please also email beshirovgeorgi3@gmail.com so nothing gets missed.";
+const TOAST_ERROR =
+  "Oops! Something went wrong. Please try again or email me directly at beshirovgeorgi3@gmail.com";
+const TOAST_VALIDATION = "Please check the highlighted fields and try again.";
+
+const successToastIcon = (
+  <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-500" strokeWidth={2.25} />
+);
+const errorToastIcon = (
+  <AlertTriangle className="h-5 w-5 shrink-0 text-rose-500" strokeWidth={2.25} />
+);
+
+function showSuccessToast(message) {
+  toast.success(message, {
+    duration: 5000,
+    icon: successToastIcon,
+  });
+}
+
+function showErrorToast(message) {
+  toast.error(message, {
+    duration: 6000,
+    icon: errorToastIcon,
+  });
+}
 
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -196,9 +222,7 @@ const Contact = () => {
     setSent(true);
     setFieldErrors({});
     setForm({ name: "", email: "", message: "" });
-    toast.success("Thank you for your message.", {
-      icon: <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-500" strokeWidth={2.25} />,
-    });
+    showSuccessToast(variant === "fallback" ? TOAST_FALLBACK : TOAST_SUCCESS);
   };
 
   const handleChange = (e) => {
@@ -236,7 +260,10 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
-    if (!validate()) return;
+    if (!validate()) {
+      showErrorToast(TOAST_VALIDATION);
+      return;
+    }
 
     // Backend missing: never show config errors — thank the user and point to email.
     if (!isSupabaseConfigured) {
@@ -256,17 +283,13 @@ const Contact = () => {
         if (import.meta.env.DEV) {
           console.error("[Contact] submit failed:", error);
         }
-        toast.error(USER_SEND_ERROR, {
-          icon: <AlertTriangle className="h-5 w-5 shrink-0 text-rose-500" strokeWidth={2.25} />,
-        });
+        showErrorToast(TOAST_ERROR);
         return;
       }
 
       finishSuccessfully("saved");
     } catch {
-      toast.error(USER_SEND_ERROR, {
-        icon: <AlertTriangle className="h-5 w-5 shrink-0 text-rose-500" strokeWidth={2.25} />,
-      });
+      showErrorToast(TOAST_ERROR);
     } finally {
       setIsSubmitting(false);
     }
